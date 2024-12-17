@@ -12,9 +12,10 @@ module.exports = {
         LightTextcolor: "#9E9191",
       },
 
+
+
       backgroundColor: {
-        buttoncolor: "#2B4E7B",
-        FormColor: "#F6F6F6",
+        bottomlayer:"6A5AE0"
       },
     },
   },
