@@ -45,7 +45,7 @@ export default function search() {
   return (
     <View className="flex  relative flex-1 flex-col bg-indigo-500 items-center justify-end pt-[20px]">
         <View className="h-[20%] w-full px-[10px] flex items-center justify-start">
-          <Header/>
+          <Header name={"Discover Quiz"}/>
           <SearchComponent/>
      
           </View>
