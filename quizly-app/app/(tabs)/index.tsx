@@ -8,15 +8,13 @@ import "../../global.css";
 import { useRouter } from "expo-router";
 import LoadingPage from "../../components/LoadingPage";
 import { useEffect, useState } from "react";
+import UseFetchLiveQuizes from "../../hooks/UseFetchLiveQuizes";
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
-useEffect(() => {
-  setTimeout(() => {
-    setLoading(false);
-  }, 3000);
-}
-);
+  const {data,isLoading}=UseFetchLiveQuizes()
+  console.log(data?.data.results)
+
   const router = useRouter();
   const NavigateToQuizes = () => {
     router.replace("/search");
@@ -28,7 +26,7 @@ useEffect(() => {
        <Profileview />
        
     
-        <QuizProgress addInfo={"Recent Quiz"} name={"Advanced Javascript"} point={"20/23"}/>
+        <QuizProgress addInfo={"Recent Quiz"} data={data?.data?.results[0]} name={"Advanced Javascript"} point={"20/23"}/>
         
         <TransparentBanner children={
           <View className="flex items-center justify-center">
@@ -42,10 +40,10 @@ useEffect(() => {
        
         />
       </View>
-      {loading &&
+      {isLoading &&
       <LoadingPage/>
       }
-        <LiveCardsList />
+        <LiveCardsList data={data?.data?.results} />
     
    
    

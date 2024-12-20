@@ -11,7 +11,10 @@ export default function question() {
     const [done,setdone]=useState(false)
     const [explanation,setexplanation]=useState()
     const [selected ,setselected]=useState()
-    const { id } = useLocalSearchParams();
+    const { id ,question,answers} = useLocalSearchParams();
+    const parsedAnswer = JSON.parse(answers);
+    const shuffledAnswers = parsedAnswer.sort(() => Math.random() - 0.5);
+    console.log(shuffledAnswers,"answers")
     const incrementId = (currentId) => {
         return Number(currentId) + 1;
       };
@@ -29,21 +32,15 @@ export default function question() {
     <View className="flex items-center justify-start flex-col mt-5 bg-white  py-[20px] w-[98%] rounded-[30px]">
         <View className="w-full   py-[20px] px-3">
             <Text className="font-bold text-[17px] " >
-            {id}. Which of the following is a fundamental data structure in computer science?
+            {id}. {question}
             </Text>
-           <AnswerComponent selected={selected} onPress={()=>{
-            AnswerQuestion("Array")
-           }}  name={"Array"}/>
-        <AnswerComponent selected={selected} iscorrect={true} onPress={()=>{
-            AnswerQuestion("Linked List")
-           }}   name={"Linked List"}/>
-
-   <AnswerComponent selected={selected}  onPress={()=>{
-            AnswerQuestion("Stack")
-           }}   name={"Stack"}/>
-   <AnswerComponent selected={selected} onPress={()=>{
-            AnswerQuestion("All of the above")
-           }}    name={"All of the above"}/>
+            {shuffledAnswers.map((answer, index) => (
+               <AnswerComponent selected={selected} iscorrect={Boolean(answer.correct)} onPress={()=>{
+                AnswerQuestion(answer.answer)
+               }}  name={answer.answer}/>
+            ))}
+          
+       
 
         </View>
         {selected &&

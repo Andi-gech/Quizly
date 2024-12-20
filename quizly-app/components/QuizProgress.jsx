@@ -2,7 +2,8 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 
-export default function QuizProgress({addInfo,name,point}) {
+export default function QuizProgress({addInfo,name,point,data}) {
+  console.log(data,"da")
   return (
     <View className="w-full bg-[rgba(255,255,255,0.3)] my-[10px] flex flex-row h-[80px] rounded-lg justify-between items-center px-[10px]">
       <View >
@@ -10,7 +11,7 @@ export default function QuizProgress({addInfo,name,point}) {
         <Text className=" text-[18px] text-zinc-200 font-semibold mb-1">{addInfo}</Text>}
         <View className="flex flex-row items-center justify-between">
             <Ionicons name="headset" size={24} color="white" />
-            <Text className='font-bold text-[16px] text-white'>{name}</Text> 
+            <Text className='font-bold text-[16px] text-white'>{data?.category}</Text> 
             
         </View>
         

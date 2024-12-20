@@ -3,7 +3,7 @@ import { Animated, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import TextButtons from './TextButtons';
 import LiveQuizCard from './LiveQuizCard';
 
-const LiveCardsList = () => {
+const LiveCardsList = ({data}) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -15,7 +15,7 @@ const LiveCardsList = () => {
     }).start();
     setExpanded(!expanded);
   };
-
+  console.log(data,"cc")
   const containerHeight = animation.interpolate({
     inputRange: [0, 1],
     outputRange: ['40%', '95%'],
@@ -28,8 +28,8 @@ const LiveCardsList = () => {
         <TextButtons name={expanded ? 'Hide' : 'Show All'} onPress={toggleExpansion} />
       </View>
       <FlatList
-        data={[{ key: 'a' }, { key: 'b' }, { key: 'c' }, { key: 'd' }]}
-        renderItem={({ item }) => <LiveQuizCard />}
+        data={data}
+        renderItem={({ item }) => <LiveQuizCard  data={item}/>}
         keyExtractor={(item) => item.key}
         contentContainerStyle={{ paddingBottom: 100 }}
       />

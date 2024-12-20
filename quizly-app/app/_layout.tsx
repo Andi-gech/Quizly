@@ -10,6 +10,11 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "../global.css";
+import {
+ 
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -32,7 +37,9 @@ export default function RootLayout() {
     return null;
   }
 
+  const queryClient = new QueryClient();
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar />
       <Stack>
@@ -42,5 +49,6 @@ export default function RootLayout() {
       </Stack>
       
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }

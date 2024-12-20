@@ -2,14 +2,27 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import Header from '../../components/Header'
 import RoundedButton from '../../components/RoundedButton'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import question from './[id]'
 
 
 export default function Starter() {
+    const {question,answers}=useLocalSearchParams()
+    console.log(question,answers,"params")
     
     const router=useRouter()
       const handleclick=()=>{
-       router.navigate('(quiz)/1')
+       router.navigate(
+        {
+          pathname:"/(quiz)/Quiz",
+          params:{
+            
+                question:question,
+                answers:answers
+            
+          }
+        }
+       )
     
       }
   return (
