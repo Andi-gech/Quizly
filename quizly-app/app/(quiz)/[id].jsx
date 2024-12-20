@@ -53,9 +53,17 @@ export default function question() {
       <Text className="text-indigo-700 font-bold  text-[20px] " >Explanation</Text> Plausible but incorrect answers designed to challenge the respondent's knowledge.Randomize Options: Present answer choices in a random order to minimize bias.
 Use "All of the Above" Sparingly: 
        </Text>}
+       {
+
+      id<3?
        <RoundedButton name={"next"} onPress={()=>{
 router.navigate('/(quiz)/'+incrementId(id))
-       }} bgcolor={"bg-black px-[50px] py-[20px] rounded-full"} color={"text-white"}/>
+       }} bgcolor={"bg-black px-[50px] py-[20px] rounded-full"} color={"text-white"}/>:
+        <RoundedButton name={"Finish"} onPress={()=>{
+router.navigate('/(quiz)/score')
+        }
+        } bgcolor={"bg-black px-[50px] py-[20px] rounded-full"} color={"text-white"}/>
+        }
          
         
      

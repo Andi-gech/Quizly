@@ -22,7 +22,7 @@ export default function HomeScreen() {
           <View className="flex items-center justify-center">
             <Text className="text-white text-[26px] font-bold">👋 Welcome to Quizly </Text>
             <Text  className=" text-white text-[13px "> Find More Quizes and Have Fun </Text>
-            <RoundedButton   name={"Find Quizes ׂ╰┈➤"}  bgcolor={"bg-zinc-300"}  color={"text-black"} onPress={
+            <RoundedButton   name={"Find Quizes ׂ╰┈➤"}  bgcolor={"bg-white"}  color={"text-black"} onPress={
   NavigateToQuizes
             } radius={"rounded-full"}/>
           </View>

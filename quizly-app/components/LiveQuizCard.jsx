@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router'
 export default function LiveQuizCard() {
   const router=useRouter()
   const handleclick=()=>{
-   router.navigate('(quiz)/1')
+   router.navigate('(quiz)/Starter')
 
   }
   return (
