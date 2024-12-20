@@ -1,10 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { FontAwesome ,MaterialCommunityIcons} from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 
 export default function LiveQuizCard() {
+  const router=useRouter()
+  const handleclick=()=>{
+   router.navigate('(quiz)/1')
+
+  }
   return (
-    <View className="w-full bg-white shadow-sm my-[5px] flex flex-row h-[80px] rounded-lg justify-between items-center px-[10px]">
+    <TouchableOpacity onPress={handleclick} className="w-full bg-white shadow-sm my-[5px] flex flex-row h-[80px] rounded-lg justify-between items-center px-[10px]">
    <View className='w-[60px] h-[60px] bg-blue-200 raduis-md flex items-center justify-center' >
    <MaterialCommunityIcons name="brain" size={24} color="black" />
 
@@ -15,7 +21,7 @@ export default function LiveQuizCard() {
 
     </View>
     <FontAwesome name="angle-right" size={24} color="black" />
-    </View>
+    </TouchableOpacity>
   )
 }
 

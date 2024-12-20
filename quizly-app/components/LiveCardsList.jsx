@@ -1,31 +1,40 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
-import TextButtons from './TextButtons'
-import LiveQuizCard from './LiveQuizCard'
+import React, { useState, useRef } from 'react';
+import { Animated, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import TextButtons from './TextButtons';
+import LiveQuizCard from './LiveQuizCard';
 
-export default function LiveCardsList() {
-    const [full, setfull] = useState(false)
-    const HandleShowPress=()=>{
-        setfull(!full)
-    }
-    
+const LiveCardsList = () => {
+  const [expanded, setExpanded] = useState(false);
+  const animation = useRef(new Animated.Value(0)).current;
+
+  const toggleExpansion = () => {
+    Animated.timing(animation, {
+      toValue: expanded ? 0 : 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+    setExpanded(!expanded);
+  };
+
+  const containerHeight = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['40%', '95%'],
+  });
 
   return (
-    <View style={{
-        height:full?'100%':'40%',
-    }} className={` absolute bottom-0  w-[98%] bg-white rounded-t-[30] flex-end px-[10px]`}>
-    <View className="flex items-center justify-center flex flex-row justify-between py-2 px-[10px]">
-      <Text className="text-black text-[20px] font-bold">Live Quizes</Text>
-     <TextButtons name={full ? "hide":"show all"} onPress={HandleShowPress}/>
+    <Animated.View style={{ height: containerHeight }} className="absolute bottom-0 w-[98%] bg-white rounded-t-3xl px-2.5">
+      <View className="flex-row justify-between items-center py-2 px-2.5">
+        <Text className="text-black text-xl font-bold">Live Quizzes</Text>
+        <TextButtons name={expanded ? 'Hide' : 'Show All'} onPress={toggleExpansion} />
       </View>
-    <View className='w-full  pb-[100px]'>
-    <FlatList 
-        data={[{key: 'a'}, {key: 'b'},{key: '4'}, {key: '5'},{key: '6'}, {key: '7'},{key: '8'}, {key: '9'}]}
-      
-        renderItem={({item}) => <LiveQuizCard />}
-    />
-    </View>
-    </View>
-  )
-}
+      <FlatList
+        data={[{ key: 'a' }, { key: 'b' }, { key: 'c' }, { key: 'd' }]}
+        renderItem={({ item }) => <LiveQuizCard />}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      />
+    </Animated.View>
+  );
+};
 
+export default LiveCardsList;

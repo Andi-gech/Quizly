@@ -37,6 +37,7 @@ export default function RootLayout() {
       <StatusBar />
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(quiz)" options={{headerShown: false}} />
         <Stack.Screen name="+not-found" />
       </Stack>
       

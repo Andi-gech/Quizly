@@ -17,6 +17,7 @@ export default function HomeScreen() {
       <View className="h-[60%] w-full px-[10px] flex items-center justify-center">
        <Profileview />
         <QuizProgress addInfo={"Recent Quiz"}/>
+        
         <TransparentBanner children={
           <View className="flex items-center justify-center">
             <Text className="text-white text-[26px] font-bold">👋 Welcome to Quizly </Text>
