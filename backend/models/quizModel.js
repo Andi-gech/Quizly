@@ -22,5 +22,12 @@ const quizSchema = new mongoose.Schema({
     },
   ],
 });
+quizSchema.set('toJSON', { virtuals: true });
+quizSchema.virtual('numberOfQuestions').get(function () {
+  return this.questions.length;
+});
+
+
+
 
 module.exports = mongoose.model('Quiz', quizSchema);

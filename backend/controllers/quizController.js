@@ -70,12 +70,22 @@ exports.scoreQuiz = async (req, res) => {
 
 exports.getAllQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find().populate('createdBy', 'username');
-    res.status(200).json(quizzes);
+    const quizzes = await Quiz.find()
+      .populate('createdBy', 'username')
+      .exec();
+
+ 
+    const quizzesWithNumberOfQuestions = quizzes.map(quiz => quiz.toJSON({ virtuals: true })).reduce((acc, quiz) => {
+      acc.push({ title:quiz.title,description:quiz.description, numberOfQuestions: quiz.numberOfQuestions });
+      return acc;
+    }, []);
+
+    res.status(200).json(quizzesWithNumberOfQuestions);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching quizzes', error: error.message });
   }
 };
+
 
 
 exports.getQuizById = async (req, res) => {
