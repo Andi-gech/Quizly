@@ -11,7 +11,7 @@ export default function QuizProgress({addInfo,name,point,data}) {
         <Text className=" text-[18px] text-zinc-200 font-semibold mb-1">{addInfo}</Text>}
         <View className="flex flex-row items-center justify-between">
             <Ionicons name="headset" size={24} color="white" />
-            <Text className='font-bold text-[16px] text-white'>{data?.category}</Text> 
+            <Text className='font-bold text-[16px] text-white'>{data?.title}</Text> 
             
         </View>
         

@@ -3,9 +3,10 @@ import { Animated, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import TextButtons from './TextButtons';
 import LiveQuizCard from './LiveQuizCard';
 
-const LiveCardsList = ({data}) => {
+const LiveCardsList = ({data,onrefresh}) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
+  const [refreshing, setRefreshing] = useState(false);
 
   const toggleExpansion = () => {
     Animated.timing(animation, {
@@ -29,6 +30,15 @@ const LiveCardsList = ({data}) => {
       </View>
       <FlatList
         data={data}
+        onRefresh={
+         ()=>{
+          onrefresh()
+          setRefreshing(true)
+         }
+        }
+        
+        
+       refreshing={refreshing}
         renderItem={({ item }) => <LiveQuizCard  data={item}/>}
         keyExtractor={(item) => item.key}
         contentContainerStyle={{ paddingBottom: 100 }}

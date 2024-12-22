@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Catagory = require('./Catagory');
 
 const quizSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -15,6 +16,7 @@ const quizSchema = new mongoose.Schema({
     },
   ],
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  Catagory: { type: mongoose.Schema.Types.ObjectId, ref: 'Catagory' },
   history: [
     {
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

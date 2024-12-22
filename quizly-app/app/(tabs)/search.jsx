@@ -6,10 +6,13 @@ import CatagorySelector from '../../components/CatagorySelector';
 import LiveQuizCard from '../../components/LiveQuizCard';
 import CatagoryCard from '../../components/CatagoryCard';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import LoadingPage from '../../components/LoadingPage';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import UseFetchCatagories from '../../hooks/UseFetchCatagories';
 export default function search() {
   const selections = ["Top", "Recents", "Categories"];
   const [selected, setSelected] = useState("Categories");
+  const {data,isLoading}=UseFetchCatagories()
 
   const handleSelection = (name) => {
     setSelected(name);
@@ -36,11 +39,9 @@ export default function search() {
       case "Categories":
         return (
           
-          <View className="flex flex-row  flex-wrap justify-between">
-            <CatagoryCard icon={<Ionicons name='code' size={23} color={"black"}/>} />
-            <CatagoryCard icon={<Ionicons name='headset' size={24} color={"black"}/>}/>
-            <CatagoryCard icon={<MaterialCommunityIcons name="finance" size={24} color="black" />} />
-            <CatagoryCard icon={<Feather name="file-plus" size={24} color="black" />}/>
+          <View className="flex flex-row  flex-wrap justify-center">
+            {data?.data?.map((item)=><CatagoryCard icon={<MaterialCommunityIcons name={item.FontAwesomeIconName} size={24} color="black" />} name={item.title}/>)}
+
           </View>
         );
       default:
@@ -54,6 +55,7 @@ export default function search() {
         <Header name={"Discover Quiz"} />
         <SearchComponent />
       </View>
+      {isLoading && <LoadingPage />}
 
       <View className="flex items-center justify-start flex-col bg-white h-[80%] w-[98%] rounded-[30px]">
         <View className="flex items-center justify-center flex-row w-full mb-3 h-[10%]">

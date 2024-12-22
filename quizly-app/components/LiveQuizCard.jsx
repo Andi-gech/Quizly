@@ -10,25 +10,7 @@ export default function LiveQuizCard({data}) {
    router.navigate({
     pathname:"/(quiz)/Starter",
     params:{
-      question:data.question,
-      answers: JSON.stringify([
-        {
-          answer:data.correct_answer,
-          correct:true
-        }
-        ,{
-          answer:data.incorrect_answers[0],
-          correct:false
-        },
-        {
-          answer:data.incorrect_answers[1],
-          correct:false
-        },
-        {
-          answer:data.incorrect_answers[2],
-          correct:false
-        }
-      ])
+      id:data._id
     }
    })
 
@@ -40,8 +22,8 @@ export default function LiveQuizCard({data}) {
 
     </View>
     <View className='flex flex-col items-center justify-center'>
-       <Text className='font-bold text-[16px]'>{data?.category}</Text>
-         <Text className='text-zinc-600 text-[12px] text-zinc-200  mb-1'>Correct 20 out of 100 </Text>
+       <Text className='font-bold text-[16px]'>{data?.title}</Text>
+         <Text className='text-zinc-600 text-[12px]  mb-1'>{data?.numberOfQuestions} Questions Available</Text>
 
     </View>
     <FontAwesome name="angle-right" size={24} color="black" />

@@ -26,6 +26,9 @@ const upload = multer({ storage: storage });
  *               description:
  *                 type: string
  *                 description: A brief description of the quiz.
+ *               Catagory:
+ *                  type: string
+ *                  description: The category of the quiz.
  *               questions:
  *                 type: array
  *                 items:
@@ -59,10 +62,37 @@ router.post('/', authenticateToken,quizController.createQuiz);
  * /api/quizzes:
  *   get:
  *     summary: Retrieve all quizzes
- *     description: Fetches a list of all available quizzes.
+ *     description: Fetches a list of all available quizzes with optional filters for category, title search, recent quizzes, and history-based sorting.
+ *     parameters:
+ *       - in: query
+ *         name: catagory
+ *         description: The category to filter quizzes by.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: searchTitle
+ *         description: A title or keyword to search for within quiz titles.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         description: The number of quizzes to retrieve (default is 4).
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 4
+ *       - in: query
+ *         name: sortByHistory
+ *         description: Set to `true` to sort quizzes by popularity (views), or `false` to sort by recency.
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *           default: false
  *     responses:
  *       200:
- *         description: A list of quizzes
+ *         description: A list of quizzes matching the filters
  *         content:
  *           application/json:
  *             schema:
@@ -79,6 +109,9 @@ router.post('/', authenticateToken,quizController.createQuiz);
  *                   description:
  *                     type: string
  *                     description: A brief description of the quiz.
+ *                   numberOfQuestions:
+ *                     type: integer
+ *                     description: The number of questions in the quiz.
  *       500:
  *         description: Internal server error
  */

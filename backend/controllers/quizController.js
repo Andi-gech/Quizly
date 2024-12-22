@@ -6,13 +6,17 @@ const { getQuizFromAI} = require('../services/generativeAIService');
 
 exports.createQuiz = async (req, res) => {
   try {
-    const { title, description, questions } = req.body;
+    const { title, description, questions,Catagory } = req.body;
     const newQuiz = new Quiz({
+      
       title,
       description,
       questions,
-      createdBy: req.user._id, 
+      createdBy: req.user.id, 
+      Catagory
+     
     });
+    console.log(Catagory)
     const savedQuiz = await newQuiz.save();
     res.status(201).json(savedQuiz);
   } catch (error) {
@@ -23,12 +27,14 @@ exports.scoreQuiz = async (req, res) => {
   try {
     const { quizId } = req.params;
     const { answers } = req.body; 
+    console.log(answers)
     console.log(quizId)
 
     const quiz = await Quiz.findById(quizId);
     if (!quiz) {
       return res.status(404).json({ message: 'Quiz not found' });
     }
+    console.log(quiz)
 
     let score = 0;
 
@@ -44,24 +50,93 @@ exports.scoreQuiz = async (req, res) => {
         const selectedAnswer = question.answers.find(a => a._id.toString() === answerId);
 
   
-        if (selectedAnswer && selectedAnswer.isCorrect) {
+        if (selectedAnswer && selectedAnswer?.isCorrect) {
+      
           score++;
+          console.log(selectedAnswer,score)
         }
       }
     }
+console.log(score)
 
-
-    const userHistory = quiz.history.find(h => h.user.toString() === req.user._id.toString());
+    const userHistory = quiz.history.find(h => h?.user.toString() === req?.user.id?.toString());
     if (userHistory) {
       userHistory.score = score;
     } else {
-      quiz.history.push({ user: req.user._id, score });
+      quiz.history.push({ user: req.user.id, score });
     }
+
+
+    console.log(quiz,req.user._id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     await quiz.save();
 
-    res.status(200).json({ score });
+    return res.status(200).json({ score });
   } catch (error) {
+    console.error('Error scoring quiz:', error);
     res.status(500).json({ message: 'Error scoring quiz', error: error.message });
   }
 };
@@ -70,18 +145,53 @@ exports.scoreQuiz = async (req, res) => {
 
 exports.getAllQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find()
+    const { catagory, searchTitle = '', sortByHistory = false } = req.query;
+
+    let query = {};
+    let sort = {};
+
+    if (catagory) {
+      query.Catagory = catagory; 
+    }
+
+
+    if (searchTitle) {
+      query.title = { $regex: searchTitle, $options: 'i' }; 
+    }
+
+    if (sortByHistory) {
+      sort = { views: -1 }; 
+    } else {
+      sort = { createdAt: -1 };
+    }
+
+
+    const quizzes = await Quiz.find(query)
       .populate('createdBy', 'username')
+      .populate('Catagory')
+      .sort(sort)
       .exec();
 
- 
-    const quizzesWithNumberOfQuestions = quizzes.map(quiz => quiz.toJSON({ virtuals: true })).reduce((acc, quiz) => {
-      acc.push({ title:quiz.title,description:quiz.description, numberOfQuestions: quiz.numberOfQuestions });
-      return acc;
-    }, []);
+    if (quizzes.length !== 0) {
+      const quizzesWithNumberOfQuestions = quizzes.map(quiz => quiz.toJSON({ virtuals: true })).reduce((acc, quiz) => {
+        acc.push({ 
+          title: quiz.title, 
+          description: quiz.description, 
+          _id: quiz._id, 
+          numberOfQuestions: quiz.numberOfQuestions,
+          catagory:quiz.Catagory
+        });
+        return acc;
+      }, []);
+      
+      return res.status(200).json(quizzesWithNumberOfQuestions);
+    }
 
-    res.status(200).json(quizzesWithNumberOfQuestions);
+  
+    res.status(200).json([]);
+    
   } catch (error) {
+    console.error('Error fetching quizzes:', error);
     res.status(500).json({ message: 'Error fetching quizzes', error: error.message });
   }
 };
@@ -147,7 +257,7 @@ exports.generateQuiz = async (req, res) => {
  
 
     const newQuiz = new Quiz({
-      title: 'Generated Quiz from PDF',  
+      title:req.file.originalname,  
       description: 'A quiz generated from the uploaded PDF content',
       questions: quizData,  
       createdBy: req.user._id,  

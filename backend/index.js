@@ -3,6 +3,7 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const authRoutes = require('./routes/authRoutes');
+const catagoryRoutes = require('./routes/catagoryRoutes');
 
 const quizRoutes = require('./routes/quizRoutes');
 const errorHandler = require('./utils/errorHandler');
@@ -47,11 +48,16 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/quizzes', quizRoutes);
 
+app.use('/api/categories', catagoryRoutes);
+
+
+
 
 app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const Host = process.env.Host || 'localhost';
+app.listen(PORT,Host,() => {
+  console.log(`Server is running on port ${Host}:${PORT}`);
 });

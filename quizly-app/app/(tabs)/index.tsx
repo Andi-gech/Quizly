@@ -12,8 +12,8 @@ import UseFetchLiveQuizes from "../../hooks/UseFetchLiveQuizes";
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
-  const {data,isLoading}=UseFetchLiveQuizes()
-  console.log(data?.data.results)
+  const {data,isLoading,refetch}=UseFetchLiveQuizes()
+  console.log(data?.data)
 
   const router = useRouter();
   const NavigateToQuizes = () => {
@@ -26,7 +26,7 @@ export default function HomeScreen() {
        <Profileview />
        
     
-        <QuizProgress addInfo={"Recent Quiz"} data={data?.data?.results[0]} name={"Advanced Javascript"} point={"20/23"}/>
+        <QuizProgress addInfo={"Recent Quiz"} data={data?.data[0]} name={data?.data[0]?.title} point={"20/23"}/>
         
         <TransparentBanner children={
           <View className="flex items-center justify-center">
@@ -43,7 +43,9 @@ export default function HomeScreen() {
       {isLoading &&
       <LoadingPage/>
       }
-        <LiveCardsList data={data?.data?.results} />
+        <LiveCardsList data={data?.data} onrefresh={
+          refetch
+        }  />
     
    
    
