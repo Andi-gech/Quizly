@@ -3,7 +3,7 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const authRoutes = require('./routes/authRoutes');
-const questionRoutes = require('./routes/questionRoutes');
+
 const quizRoutes = require('./routes/quizRoutes');
 const errorHandler = require('./utils/errorHandler');
 const connectDB = require('./utils/db');
@@ -44,7 +44,7 @@ const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/questions', questionRoutes);
+
 app.use('/api/quizzes', quizRoutes);
 
 
