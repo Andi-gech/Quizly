@@ -13,7 +13,7 @@ import UseFetchLiveQuizes from "../../hooks/UseFetchLiveQuizes";
 export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const {data,isLoading,refetch}=UseFetchLiveQuizes()
-  console.log(data?.data)
+
 
   const router = useRouter();
   const NavigateToQuizes = () => {

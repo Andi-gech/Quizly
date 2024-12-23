@@ -1,5 +1,5 @@
 const Quiz = require('../models/quizModel');
-const multer = require('multer');
+const User = require('../models/userModel');
 const pdf = require('pdf-parse');
 const { getQuizFromAI} = require('../services/generativeAIService');
 
@@ -27,14 +27,13 @@ exports.scoreQuiz = async (req, res) => {
   try {
     const { quizId } = req.params;
     const { answers } = req.body; 
-    console.log(answers)
-    console.log(quizId)
+    console.log(req.user)
 
     const quiz = await Quiz.findById(quizId);
     if (!quiz) {
       return res.status(404).json({ message: 'Quiz not found' });
     }
-    console.log(quiz)
+
 
     let score = 0;
 
@@ -53,11 +52,11 @@ exports.scoreQuiz = async (req, res) => {
         if (selectedAnswer && selectedAnswer?.isCorrect) {
       
           score++;
-          console.log(selectedAnswer,score)
+     
         }
       }
     }
-console.log(score)
+
 
     const userHistory = quiz.history.find(h => h?.user.toString() === req?.user.id?.toString());
     if (userHistory) {
@@ -67,7 +66,7 @@ console.log(score)
     }
 
 
-    console.log(quiz,req.user._id)
+ 
 
 
 
@@ -249,6 +248,7 @@ exports.generateQuiz = async (req, res) => {
 
     const pdfBuffer = req.file.buffer;
     const data = await pdf(pdfBuffer);
+    console.log(data)
 
     const pdfText = data.text;
 
@@ -260,7 +260,7 @@ exports.generateQuiz = async (req, res) => {
       title:req.file.originalname,  
       description: 'A quiz generated from the uploaded PDF content',
       questions: quizData,  
-      createdBy: req.user._id,  
+      createdBy: req.user.id,  
     });
 
     const savedQuiz = await newQuiz.save();
@@ -268,6 +268,35 @@ exports.generateQuiz = async (req, res) => {
     
     res.status(201).json(savedQuiz);
   } catch (error) {
+    console.log('Error generating quiz:', error);
     res.status(500).json({ message: 'Error generating quiz', error: error.message });
   }
 };
+
+exports.LeaderBoard = async function getTotalScores(req, res) {
+  try {
+    const results = await Quiz.aggregate([
+      { $unwind: '$history' },
+      { $group: {
+        _id: '$history.user',
+        totalScore: { $sum: '$history.score' }
+      }},
+      { $sort: { totalScore: -1 } } 
+    ])
+
+    const users = await User.find({ _id: { $in: results.map(r => r._id) } });
+
+    const leaderBoard = results.map(result => {
+      const user = users.find(u => u?._id?.toString() === result?._id?.toString());
+      return {
+        user: user?.username|| 'Unknown',
+        totalScore: result?.totalScore
+      }
+    });
+
+    res.status(200).json(leaderBoard);
+  } catch (error) {
+    console.error('Error aggregating total scores:', error);
+    throw error;
+  }
+}

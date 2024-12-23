@@ -6,7 +6,7 @@ const BALL_COUNT = 8; // Number of balls
 const RADIUS = 20; // Radius of the circle
 const BALL_SIZE = 10; // Size of each ball
 
-const RotatingBallsLoader = () => {
+const RotatingBallsLoader = ({color}) => {
   const rotation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -37,6 +37,9 @@ const RotatingBallsLoader = () => {
           key={i}
           style={[
             styles.ball,
+            {
+              backgroundColor: color||"white",
+            },
             {
               transform: [
                 { translateX: x },
@@ -83,8 +86,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: BALL_SIZE,
     height: BALL_SIZE,
-    borderRadius: BALL_SIZE / 2,
-    backgroundColor: 'white',
+    borderRadius: BALL_SIZE / 2
+  
   },
 });
 

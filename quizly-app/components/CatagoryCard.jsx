@@ -1,10 +1,11 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-export default function CatagoryCard({icon}) {
+export default function CatagoryCard({icon,name,onpress}) {
   return (
-    <View className="flex items-center justify-center  mx-[10px] mt-[10px] w-[100px] h-[100px] bg-yellow-400 shadow-sm   rounded-[30px]">
+    <TouchableOpacity  onPress={onpress} className="flex items-center justify-center  mx-[10px] mt-[10px] w-[100px] h-[100px] bg-white  shadow-zinc-200 shadow-sm   rounded-[30px]">
    {icon}
-    </View>
+<Text className="text-black text-[13px] ">{name}</Text>
+    </TouchableOpacity>
   )
 }

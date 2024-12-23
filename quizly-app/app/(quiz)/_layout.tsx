@@ -12,7 +12,7 @@ export default function _layout() {
            <Stack.Screen name="Starter"  options={{headerShown: false}} />
             <Stack.Screen name="score" options={{headerShown: false}} />
             
-
+<Stack.Screen name="Catagory" options={{headerShown: false}} />
       
          </Stack>
   )

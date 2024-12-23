@@ -291,6 +291,64 @@ router.post('/:quizId/score', authenticateToken, quizController.scoreQuiz);
  */
 
 router.post('/GenerateQuiz',authenticateToken,upload.single("file"),quizController.generateQuiz);
-
+/**
+ * @swagger
+ * /api/quizzes/leaderboard/calculatescore:
+ *   get:
+ *     summary: Retrieve all quizzes
+ *     description: Fetches a list of all available quizzes with optional filters for category, title search, recent quizzes, and history-based sorting.
+ *     parameters:
+ *       - in: query
+ *         name: catagory
+ *         description: The category to filter quizzes by.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: searchTitle
+ *         description: A title or keyword to search for within quiz titles.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         description: The number of quizzes to retrieve (default is 4).
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 4
+ *       - in: query
+ *         name: sortByHistory
+ *         description: Set to `true` to sort quizzes by popularity (views), or `false` to sort by recency.
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *     responses:
+ *       200:
+ *         description: A list of quizzes matching the filters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: The unique identifier of the quiz.
+ *                   title:
+ *                     type: string
+ *                     description: The title of the quiz.
+ *                   description:
+ *                     type: string
+ *                     description: A brief description of the quiz.
+ *                   numberOfQuestions:
+ *                     type: integer
+ *                     description: The number of questions in the quiz.
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/leaderboard/calculatescore', quizController.LeaderBoard);
 
 module.exports = router;

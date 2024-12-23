@@ -68,7 +68,7 @@ export default function Question({
           <RoundedButton
             name="Next"
             onPress={onnext}
-            bgcolor="bg-black px-[60px] py-[24px] rounded-full"
+            bgcolor="bg-black px-[60px] py-[20px] min-h-[60px] rounded-full"
             color="text-white"
           />
         </ScrollView>

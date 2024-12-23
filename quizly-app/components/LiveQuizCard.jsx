@@ -4,7 +4,7 @@ import { FontAwesome ,MaterialCommunityIcons} from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 
 export default function LiveQuizCard({data}) {
-  console.log(data,"Ss")
+ 
   const router=useRouter()
   const handleclick=()=>{
    router.navigate({

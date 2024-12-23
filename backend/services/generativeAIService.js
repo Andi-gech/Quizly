@@ -6,7 +6,7 @@ const getQuizFromAI = async (pdfText) => {
   try {
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: `Create a 60 question quiz with multiple-choice questions based on the provided PDF text. Provide questions, answers, and the correct answer in this format  [{"questionText": "What is the capital of France?",
+      systemInstruction: `Create a 60 question quiz with multiple-choice questions based on the provided any PDF text with out any comment. Provide questions, answers, and the correct answer in this format  [{"questionText": "What is the capital of France?",
         "answers": [
           { "text": "Paris", "isCorrect": true },
           { "text": "Berlin", "isCorrect": false },
@@ -26,6 +26,7 @@ const getQuizFromAI = async (pdfText) => {
       contents: [{ role: "user", parts: [{ text: pdfText }] }],
       generationConfig,
     });
+    console.log(result.response.text())
     rawJsonResponse =await result.response.text().replace(/```json|```/g, '');
  
     

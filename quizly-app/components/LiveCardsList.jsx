@@ -39,8 +39,8 @@ const LiveCardsList = ({data,onrefresh}) => {
         
         
        refreshing={refreshing}
-        renderItem={({ item }) => <LiveQuizCard  data={item}/>}
-        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => <LiveQuizCard  key={item._id} data={item}/>}
+      
         contentContainerStyle={{ paddingBottom: 100 }}
       />
     </Animated.View>

@@ -10,8 +10,9 @@ api.interceptors.request.use(
   async (config) => {
     try {
       const token = await AsyncStorage.getItem("token");
+      console.log(token);
       if (token) {
-        // config.headers.Authorization = `${token}`;
+        config.headers.Authorization = `Barier ${token}`;
       } else {
         console.log("No token found");
       }
