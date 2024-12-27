@@ -15,7 +15,8 @@ export default function Add() {
   const { data } = UseFetchCatagories();
   const [file, setFile] = useState({
     name: '',
-    uri: '',
+    uri: ''
+  
   });
   const [quizName, setQuizName] = useState('');
   const [selectedCatagory, setSelectedCatagory] = useState();
@@ -31,7 +32,18 @@ export default function Add() {
         type: 'application/pdf',
       });
       if (res.assets) {
-        setFile(res.assets[0]);
+       
+        if (res.assets[0].size > 10000000) {
+          
+          setError('File size should be less than 10MB');
+          
+          setTimeout(() => {
+            setError('');
+          }, 3000);
+        }
+        else{
+          setFile(res.assets[0]);
+        }
         console.log('File selected:', res);
       } else {
         console.log('File selection was canceled');
@@ -64,7 +76,7 @@ export default function Add() {
         }, 3000);
       },
       onError: (error) => {
-       setError(error?.response?.data?.message);
+       setError("Error generating quiz please provide Your learning module");
         setTimeout(() => {
           setError('');
         }, 3000);
@@ -74,7 +86,8 @@ export default function Add() {
 
   const handleGenerateQuiz = () => {
     console.log(file,quizName,selectedCatagory);
-    if (file.uri && quizName && selectedCatagory) {
+
+    if (file.uri  && quizName && selectedCatagory) {
       const formData = new FormData();
       formData.append('title', quizName);
       formData.append('Catagory', selectedCatagory);
