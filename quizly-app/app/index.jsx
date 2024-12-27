@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useColorScheme, View } from "react-native";
 import { isAuthenticated } from "../utils/auth";
 import { StatusBar } from "expo-status-bar";
@@ -9,20 +9,27 @@ const Index = () => {
   const segments = useSegments();
   const router = useRouter();
   const colorScheme = useColorScheme();
-  const isLoggedIn = isAuthenticated();
   const navigationState = useRootNavigationState();
 
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (!navigationState?.key) return;
 
-  
+    const inAuthGroup = segments[0] === "(auth)";
+    const checkAuth = async () => {
+      const loggedIn = await isAuthenticated();
+      if (!loggedIn && !inAuthGroup) {
+    
+        router.push("/(auth)/login");
+      } else {
+      
+        router.replace("/(tabs)");
+      }
+    };
 
-    if (!isLoggedIn ) {
-      router.push("/(auth)/login");
-    } else if (isLoggedIn) {
-      router.replace("/(tabs)");
-    }
-  }, [isLoggedIn, segments, navigationState?.key]);
+    checkAuth();
+  }, [ navigationState?.key]);
+  
 
   return (
     <View>

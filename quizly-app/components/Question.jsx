@@ -1,7 +1,8 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import RoundedButton from './RoundedButton';
 import AnswerComponent from './AnswerComponent';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Question({
   current,
@@ -9,6 +10,7 @@ export default function Question({
   answers,
   id,
   onnext,
+  onclose,
 
   AnswerQuestion,
 }) {
@@ -73,6 +75,8 @@ export default function Question({
           />
         </ScrollView>
       </View>
+      <RoundedButton name="Close Quiz" onPress={onclose} bgcolor="bg-red-500 px-[60px] py-[20px] min-h-[40px] rounded-full" color="text-white" />
+
     </View>
   );
 }

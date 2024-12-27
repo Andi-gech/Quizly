@@ -1,26 +1,27 @@
-import { View, TextInput,Text, TouchableOpacity } from 'react-native';
+import { View, TextInput,Text,TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RoundedButton from '../../components/RoundedButton';
 import api from '../../utils/Api';
-import { Ionicons as Ioicon } from '@expo/vector-icons';
+
 import LoadingPage from '../../components/LoadingPage';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 
-export default function Login() {
+export default function Signup() {
   const router = useRouter();
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
   const mutation = useMutation({
     mutationFn: async (credentials) => {
       return await api.post(
-        '/api/auth/login',
+        '/api/auth/signup',
         credentials
       );
     },
@@ -30,13 +31,13 @@ export default function Login() {
       router.replace('/(tabs)');
     },
     onError: (error) => {
-    setError(error.response.data.message)
-  console.log(error)
+        
+    setError(error?.response?.data?.message);
       setTimeout(() => {
-        setError('');
+        setError('');   
       }, 3000);
     },
-    mutationKey: ['login'],
+    mutationKey: ['Register'],
   });
 
   return (
@@ -54,6 +55,15 @@ export default function Login() {
             <Text className="text-yellow-400 text-center">{error}</Text>
           </View>
         ) : null}
+        </View>
+        <View className="mb-4">
+          <TextInput
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+            placeholderTextColor={"white"}
+            className="w-full h-[50px]  text-white rounded-[10px] bg-indigo-300   px-4 "
+          />
         </View>
         <View className="mb-4">
           <TextInput
@@ -76,22 +86,23 @@ export default function Login() {
         </View>
         <View className="items-center justify-center flex-col w-full h-[100px] mx-auto">
           <RoundedButton
-            name="Login"
+            name="Register"
             bgcolor="bg-white shadow-sm shadow-zinc-200"
             color="text-black text-[20px] font-bold"
             radius=" rounded-full px-[20px] w-full h-[50px]  py-[15px]"
             onPress={() => {
-              mutation.mutate({ email, password });
+            
+              mutation.mutate({ username,email,password });
             }}
           />
         </View>
         <View className="items-center justify-center flex-col w-full h-[100px] mx-auto">
         
-          <TouchableOpacity onPress={() => router.push('/(auth)/Signup')} className="w-full   rounded-[10px] items-center justify-start flex flex-row">
-            <Text className="text-white text-[14px] font-bold">Dont Have An Account??</Text>
-            <Text className="text-orange-400 text-[14px] font-bold">Register</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={() => router.push('/(auth)/login')} className="w-full   rounded-[10px] items-center justify-start flex flex-row">
+          <Text className="text-white text-[14px] font-bold">already have an account</Text>
+          <Text className="text-orange-400 text-[14px] mx-5 font-bold">Login</Text>
+        </TouchableOpacity>
+      </View>
        
       </View>
     </View>

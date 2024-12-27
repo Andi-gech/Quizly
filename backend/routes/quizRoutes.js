@@ -350,5 +350,7 @@ router.post('/GenerateQuiz',authenticateToken,upload.single("file"),quizControll
  *         description: Internal server error
  */
 router.get('/leaderboard/calculatescore', quizController.LeaderBoard);
+router.get('/quiz/mine', authenticateToken,quizController.getmyQuizzes);
+router.get('/profile/stats', authenticateToken,quizController.getprofilestats);
 
 module.exports = router;

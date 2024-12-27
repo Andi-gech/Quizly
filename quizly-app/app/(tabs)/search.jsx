@@ -1,126 +1,84 @@
-import { View, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { View, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import Header from '../../components/Header';
 import SearchComponent from '../../components/SearchComponent';
-import CatagorySelector from '../../components/CatagorySelector';
+
 import LiveQuizCard from '../../components/LiveQuizCard';
 import CatagoryCard from '../../components/CatagoryCard';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-
 import UseFetchLiveQuizes from '../../hooks/UseFetchLiveQuizes';
 import UseFetchCatagories from '../../hooks/UseFetchCatagories';
-import RotatingBallsLoader from '../../components/LoadingIndicater';
-export default function search() {
-  const selections = ["Top", "Recents", "Categories"];
+import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
-  const [selected, setSelected] = useState("Categories");
-  const {data,isLoading}=UseFetchCatagories()
-  const [params, setParams] = useState({
-   
-  });
-  const { data:quiz,refetch,isFetching:isfeching } = UseFetchLiveQuizes(params)
+export default function Search() {
+  const [selected, setSelected] = useState('Categories');
+
+  const [params, setParams] = useState({});
+  const { data: categories, isLoading: isCategoriesLoading } = UseFetchCatagories();
+  const { data: quizzes, refetch, isFetching: isQuizzesFetching } = UseFetchLiveQuizes(params);
+
   useEffect(() => {
-    refetch()
-  }, [params])
+    refetch();
+  }, [params]);
 
-  const handleSelection = (name) => {
-   
-    if (selected === "Top") {
-      setParams({
-        sortByHistory: true,
-      })
-    }
-  
-
-    setSelected(name);
-  };
-
-  const CaseSelector = () => {
-    switch (selected) {
-      case "Top":
-        return (
-          <FlatList
-          data={quiz?.data}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => <LiveQuizCard key={item._id} data={item} />}
-       
-          />
-        );
-      case "Recents":
-        return (
-          <View className="flex items-center justify-center flex-col">
-          <FlatList
-            data={quiz?.data}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => <LiveQuizCard key={item._id} data={item} />}
-          />
-          </View>
-        );
-      case "Categories":
-        return (
+  const renderContent = () => {
+    if (selected === 'Categories') {
+      return (
+        <View className="flex flex-row flex-wrap justify-center">
           
-          <View className="flex flex-row  flex-wrap justify-center">
-            {data?.data?.map((item)=><CatagoryCard key={item._id} onpress={
-              ()=>{
-                setParams({
-                  catagory:item._id
-                })
-                setSelected("Search")
-              }
-            } icon={<MaterialCommunityIcons name={item.FontAwesomeIconName} size={24} color="black" />} name={item.title}/>)}
-
-          </View>
-        );
-
-      case "Search":
-        return (
-          <FlatList
-            data={quiz?.data}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => <LiveQuizCard key={item._id} data={item} />}
-          />
-        );
-      default:
-        return null;
+          {categories?.data?.map((item) => (
+            <CatagoryCard
+              key={item._id}
+              onpress={() => {
+              router.push({
+                pathname: '/(quiz)/Catagory',
+                params:{
+                  id: item._id,
+                  name: item.title
+                }
+              });
+              }}
+              icon={<FontAwesome name={item.FontAwesomeIconName} size={22} color={"White"} />}
+              name={item.title}
+            />
+          ))}
+        </View>
+      );
+    } else {
+      return (
+        <FlatList
+          data={quizzes?.data}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <LiveQuizCard data={item} />}
+          showsVerticalScrollIndicator={false}
+        />
+      );
     }
   };
 
   return (
-    <View className="flex relative flex-1 flex-col bg-indigo-500 items-center justify-end pt-[20px]">
-      <View className="h-[20%] w-full px-[10px] flex items-center justify-start">
-        <Header name={"Discover Quiz"} />
-        <SearchComponent onChangeText={
-          (text) => {setParams({  searchTitle: text})
-          setSelected("recents")}
-        } />
+    <View className="flex-1 bg-indigo-500 items-center justify-end pt-5">
+      <View className="h-1/5 w-full px-2.5 items-center justify-start">
+        <Header name="Discover Quiz" showback={false} />
+        <SearchComponent
+          onChangeText={(text) => {
+            setParams({ searchTitle: text });
+            if (text === '') {
+              setParams({});
+              setSelected('Categories');
+            } else {
+              setSelected('Search');
+            }
+          }}
+        />
       </View>
-
-    
-      <View className="flex items-center justify-start flex-col bg-white h-[80%] w-[98%] rounded-[30px]">
-     
-        <View className="flex items-center justify-center flex-row w-full mb-3 h-[10%]">
-          <CatagorySelector
-            name="Top"
-            selected={selected === "Top"}
-            onPress={() => handleSelection("Top")}
-          />
-          <CatagorySelector
-            name="Recents"
-            selected={selected === "Recents"}
-            onPress={() => handleSelection("Recents")}
-          />
-          <CatagorySelector
-            name="Categories"
-            selected={selected === "Categories"}
-            onPress={() => handleSelection("Categories")}
-          />
-        </View>
-        {(isfeching||isLoading) && <RotatingBallsLoader color={"rgba(0,0,0,0.3)"}  />}
-
-        <View className="w-full px-[10px] h-[90%] pb-[100px]">
-          {CaseSelector()}
-        </View>
-     
+      <View className="flex-1 bg-white w-[99%] rounded-t-3xl items-center pt-2.5">
+        {(isQuizzesFetching || isCategoriesLoading) ? (
+          <ActivityIndicator size="large" color="rgba(0,0,0,0.3)" />
+        ) : (
+          <View className="w-full px-2.5 pb-25">{renderContent()}</View>
+        )}
       </View>
     </View>
   );

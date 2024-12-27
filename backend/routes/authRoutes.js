@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const authenticateToken = require('../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -54,5 +55,10 @@ router.post('/signup', authController.signup);
  *         description: Unauthorized
  */
 router.post('/login', authController.login);
+
+router.get('/me',authenticateToken,authController.getme);
+router.put('/update',authenticateToken,authController.updateMe);
+
+
 
 module.exports = router;

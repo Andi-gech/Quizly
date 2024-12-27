@@ -9,7 +9,7 @@ const {score}=useLocalSearchParams()
 
     const router=useRouter()
     const handleclick=()=>{
-        router.navigate('/')
+        router.replace("/(tabs)")
      
       }
   return (

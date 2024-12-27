@@ -17,6 +17,11 @@ export default function Starter() {
   const router = useRouter();
 
   const { data, isLoading } = UseFetchQuiz({ id });
+  const handleclose = () => {
+    mutation.mutate();
+
+  
+  }
 
   const mutation = useMutation(
     async () => {
@@ -35,6 +40,8 @@ export default function Starter() {
             score: data.score,
           },
         })
+        setAnswers([]);
+        setStarted(false);
       },
     }
   );
@@ -82,6 +89,7 @@ export default function Starter() {
           setAnswers([...answers, { questionId:question, answerId: answer }]);
         }}
         current={currentQuestion}
+        onclose={handleclose}
         id={data?.data?.questions[currentQuestion]?._id}
         question={data?.data?.questions[currentQuestion]?.questionText}
         answers={data?.data?.questions[currentQuestion]?.answers.sort(() => Math.random() - 0.5)}

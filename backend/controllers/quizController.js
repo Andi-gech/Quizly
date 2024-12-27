@@ -227,7 +227,15 @@ exports.updateQuiz = async (req, res) => {
   }
 };
 
-
+exports.getmyQuizzes = async (req, res) => {
+  try {
+  console.log(req.user.id)
+    const quizzes = await Quiz.find({ createdBy: req.user.id });
+    res.status(200).json(quizzes);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching quizzes', error: error.message });
+  }
+}
 exports.deleteQuiz = async (req, res) => {
   try {
     const deletedQuiz = await Quiz.findByIdAndDelete(req.params.id);
@@ -257,8 +265,9 @@ exports.generateQuiz = async (req, res) => {
  
 
     const newQuiz = new Quiz({
-      title:req.file.originalname,  
+      title:req.body.title,  
       description: 'A quiz generated from the uploaded PDF content',
+      Catagory:req.body.Catagory,
       questions: quizData,  
       createdBy: req.user.id,  
     });
@@ -298,5 +307,34 @@ exports.LeaderBoard = async function getTotalScores(req, res) {
   } catch (error) {
     console.error('Error aggregating total scores:', error);
     throw error;
+  }
+}
+exports.getprofilestats = async function getprofilestats(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const quizzes = await Quiz.find({ 'history.user': userId });
+
+    let totalQuizzesTaken = 0;
+    let totalPoints = 0;
+    let totalQuestionsDone = 0;
+
+    quizzes.forEach(quiz => {
+      const userHistory = quiz.history.find(h => h.user.toString() === userId.toString());
+      if (userHistory) {
+        totalQuizzesTaken++;
+        totalPoints += userHistory.score;
+        totalQuestionsDone += quiz.questions.length;
+      }
+    });
+
+    res.status(200).json({
+      totalQuizzesTaken,
+      totalPoints,
+      totalQuestionsDone
+    });
+  } catch (error) {
+    console.error('Error fetching profile stats:', error);
+    res.status(500).json({ message: 'Error fetching profile stats', error: error.message });
   }
 }

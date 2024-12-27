@@ -49,5 +49,40 @@ exports.login = async (req, res) => {
     });
   }
 };
+exports.getme = async (req,res) =>{
+  try{
+    const id=req.user.id
+    const authUser=await User.findById(id).select('-password')
+   return res.status(200).json(authUser);
+
+  }
+  catch(err){
+   return res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+}
+exports.updateMe = async (req,res) =>{
+  try{
+    const id=req.user.id
+    const authUser=await User.findByIdAndUpdate
+    (id,{
+      username:req.body.username
+    },{
+      new:true,
+      runValidators:true
+    })
+   return res.status(200).json(authUser);
+  }
+  catch(err){
+   return res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+}
+
+
 
 
