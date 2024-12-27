@@ -85,7 +85,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <View
             
-              className="h-[60px] w-[60px] flex justify-center bg-indigo-500  shadow-md  border-[5px] border-zinc-200 rounded-full items-center  z-[300] mb-5"
+              className="h-[60px] w-[60px] flex justify-center bg-black ..  shadow-md  border-[5px] border-zinc-200 rounded-full items-center  z-[300] mb-5"
             >
               <Ionicons
                 size={23}

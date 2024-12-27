@@ -41,7 +41,7 @@ export default function Signup() {
   });
 
   return (
-    <View className="flex-1 items-center h-screen justify-center bg-indigo-500">
+    <View className="flex-1 items-center h-screen justify-center bg-black ..">
    <View className="w-full h-[100px] items-center justify-center flex-row">
    <MaterialCommunityIcons name="brain" size={74} color="white" />
     <Text className="text-white text-[60px] font-bold">QUIZLY</Text>
@@ -62,7 +62,7 @@ export default function Signup() {
             value={username}
             onChangeText={setUsername}
             placeholderTextColor={"white"}
-            className="w-full h-[50px]  text-white rounded-[10px] bg-indigo-300   px-4 "
+            className="w-full h-[50px]  text-white rounded-[10px] bg-zinc-900   px-4 "
           />
         </View>
         <View className="mb-4">
@@ -71,7 +71,7 @@ export default function Signup() {
             value={email}
             onChangeText={setEmail}
             placeholderTextColor={"white"}
-            className="w-full h-[50px]  text-white rounded-[10px] bg-indigo-300   px-4 "
+            className="w-full h-[50px]  text-white rounded-[10px] bg-zinc-900   px-4 "
           />
         </View>
         <View className="mb-6">
@@ -81,7 +81,7 @@ export default function Signup() {
             onChangeText={setPassword}
             placeholderTextColor={"white"}
             secureTextEntry
-            className="w-full h-[50px]  text-white rounded-[10px] bg-indigo-300  px-4 "
+            className="w-full h-[50px]  text-white rounded-[10px] bg-zinc-900  px-4 "
           />
         </View>
         <View className="items-center justify-center flex-col w-full h-[100px] mx-auto">

@@ -19,17 +19,18 @@ export default function Catagory() {
     }, [id])
     console.log(data?.data)
   return (
-    <View className="flex-1 h-screen w-screen  bg-indigo-500 items-center  px-[10px] py-[10px] pt-5">
+    <View className="flex-1 h-screen w-screen  bg-black .. items-center justify-between  px-[10px] py-[10px] pt-5">
 
   {(isLoading||isFetching) && <LoadingPage />}
       <Header showback={true} name={name} />
+      <View className="w-full  items-start pt-[20px] px-[10px] min-h-[90%] rounded-t-[30px] bg-white justify-center flex-row">
       <FlatList 
       data={data?.data}
       keyExtractor={item=>item._id}
       renderItem={({item})=>(
         <LiveQuizCard key={item._id} data={item} />
       )}
-      />
+      /></View>
 
    </View>
   )

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TextInput, ActivityIndicator } from 'react-native';
+import { View, FlatList, TextInput,ScrollView, RefreshControl,ActivityIndicator } from 'react-native';
 import Header from '../../components/Header';
 import SearchComponent from '../../components/SearchComponent';
 
 import LiveQuizCard from '../../components/LiveQuizCard';
 import CatagoryCard from '../../components/CatagoryCard';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 import UseFetchLiveQuizes from '../../hooks/UseFetchLiveQuizes';
 import UseFetchCatagories from '../../hooks/UseFetchCatagories';
 import { FontAwesome } from '@expo/vector-icons';
@@ -13,20 +13,28 @@ import { router } from 'expo-router';
 
 export default function Search() {
   const [selected, setSelected] = useState('Categories');
+  const [refreshing, setRefreshing] = useState(false);
 
   const [params, setParams] = useState({});
-  const { data: categories, isLoading: isCategoriesLoading } = UseFetchCatagories();
+  const { data: categories, isLoading: isCategoriesLoading,refetch:refetchCatagory } = UseFetchCatagories();
   const { data: quizzes, refetch, isFetching: isQuizzesFetching } = UseFetchLiveQuizes(params);
 
   useEffect(() => {
     refetch();
   }, [params]);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetchCatagory(); // Refresh the categories
+    setRefreshing(false);
+  };
 
   const renderContent = () => {
     if (selected === 'Categories') {
       return (
-        <View className="flex flex-row flex-wrap justify-center">
-          
+        <ScrollView
+        contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center',paddingBottom: 20 }}
+         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
           {categories?.data?.map((item) => (
             <CatagoryCard
               key={item._id}
@@ -39,11 +47,11 @@ export default function Search() {
                 }
               });
               }}
-              icon={<FontAwesome name={item.FontAwesomeIconName} size={22} color={"White"} />}
+              icon={<FontAwesome name={item.FontAwesomeIconName} size={22} color={"white"} />}
               name={item.title}
             />
           ))}
-        </View>
+        </ScrollView>
       );
     } else {
       return (
@@ -58,7 +66,7 @@ export default function Search() {
   };
 
   return (
-    <View className="flex-1 bg-indigo-500 items-center justify-end pt-5">
+    <View className="flex-1 bg-black .. items-center justify-end pt-5">
       <View className="h-1/5 w-full px-2.5 items-center justify-start">
         <Header name="Discover Quiz" showback={false} />
         <SearchComponent

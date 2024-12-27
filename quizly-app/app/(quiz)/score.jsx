@@ -13,7 +13,7 @@ const {score}=useLocalSearchParams()
      
       }
   return (
-    <View className="flex  flex-1 flex-col bg-indigo-500 items-center justify-start pt-[20px]">
+    <View className="flex  flex-1 flex-col bg-black .. items-center justify-start pt-[20px]">
        
             <View className="flex items-center justify-center flex-col  h-[80%] w-[98%] rounded-[30px]">
                 <View className="flex items-center justify-center flex-col  bg-yellow-400  border-[10px] border-white h-[300px] w-[300px] rounded-full">

@@ -37,7 +37,7 @@ const LiveCardsList = ({data,onrefresh}) => {
         ()=>{
           router.push('/(tabs)/add')
         }
-            } className="bg-indigo-400 px-4 py-2 rounded-lg mt-4">
+            } className="bg-zinc-900 px-4 py-2 rounded-lg mt-4">
               <Text className="text-white">Generate Quiz</Text>
             </TouchableOpacity>
           </View>

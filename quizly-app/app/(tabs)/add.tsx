@@ -20,6 +20,9 @@ export default function Add() {
   const [quizName, setQuizName] = useState('');
   const [selectedCatagory, setSelectedCatagory] = useState();
   const [successMessage, setSuccessMessage] = useState('');
+  const [progress, setProgress] = useState(0);
+  
+
   const [error, setError] = useState('');
 
   const handleFileSelection = async () => {
@@ -43,7 +46,13 @@ export default function Add() {
       const response = await api.post('/api/quizzes/generateQuiz', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        },
+        },onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setProgress(percentCompleted);
+        }
+      
       });
       return response.data;
     },
@@ -88,7 +97,7 @@ export default function Add() {
   const pickerRef = useRef(null);
 
   return (
-    <View className="flex-1 bg-indigo-500 items-center justify-start pt-[20px]">
+    <View className="flex-1 bg-black .. items-center justify-start pt-[20px]">
       <Header name="Create Quiz" showback={false} />
       <View className="flex flex-col items-center bg-white h-[80%] w-[90%] rounded-[30px] p-5">
         <Text className="text-black text-[20px] font-bold mb-[20px] text-center">

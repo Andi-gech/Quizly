@@ -17,8 +17,8 @@ export default function LiveQuizCard({data}) {
   }
   return (
     <TouchableOpacity onPress={handleclick} className="w-full bg-white shadow-sm my-[5px] flex flex-row h-[80px] rounded-lg justify-between items-center px-[10px]">
-   <View className='w-[60px] h-[60px] bg-blue-200 raduis-md flex items-center justify-center' >
-   <MaterialCommunityIcons name="brain" size={24} color="black" />
+   <View className='w-[60px] h-[60px] bg-zinc-900 raduis-[30px] flex items-center justify-center' >
+   <MaterialCommunityIcons name="brain" size={24} color="white" />
 
     </View>
     <View className='flex flex-col items-center justify-center'>

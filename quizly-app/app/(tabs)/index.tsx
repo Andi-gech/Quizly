@@ -23,7 +23,7 @@ export default function HomeScreen() {
   };
   console.log(data?.data?.history)
   return (
-   <View className="flex  relative flex-1 flex-col bg-indigo-500 items-center justify-start">
+   <View className="flex  relative flex-1 flex-col bg-black .. items-center justify-start">
       <View className="h-[60%] w-full px-[10px] flex items-center justify-center">
        <Profileview />
        

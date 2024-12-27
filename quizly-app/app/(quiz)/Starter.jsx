@@ -62,7 +62,7 @@ export default function Starter() {
 
   if (!started) {
     return (
-      <View className="flex flex-1 flex-col bg-indigo-500 items-center justify-start pt-[20px]">
+      <View className="flex flex-1 flex-col bg-black .. items-center justify-start pt-[20px]">
         <Header name="Quiz" />
         {isLoading && <LoadingPage />}
         <View className="flex items-center justify-center flex-col h-[80%] w-[98%] rounded-[30px]">
@@ -81,7 +81,7 @@ export default function Starter() {
   }
 
   return (
-    <View className="flex relative flex-1 flex-col bg-indigo-500 items-center justify-start pt-[20px]">
+    <View className="flex relative flex-1 flex-col bg-black .. items-center justify-start pt-[20px]">
       <Header name="Quiz Started" />
       {mutation.isLoading && <LoadingPage />}
       <Question
