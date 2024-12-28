@@ -58,6 +58,8 @@ router.post('/login', authController.login);
 
 router.get('/me',authenticateToken,authController.getme);
 router.put('/update',authenticateToken,authController.updateMe);
+router.post('/verify',authenticateToken,authController.verifyEmail);
+
 
 
 

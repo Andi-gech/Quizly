@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   email: {
     type: String,
     required: true,
@@ -23,7 +27,7 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
 userSchema.pre('save', async function (next) {

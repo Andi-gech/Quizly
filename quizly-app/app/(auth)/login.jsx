@@ -27,7 +27,14 @@ export default function Login() {
     onSuccess: async (response) => {
       const token = response.data.token;
       await AsyncStorage.setItem('token', token);
-      router.replace('/(tabs)');
+      if(response.data.isVerified){
+        router.replace('/(tabs)');
+      }
+
+      router.replace('/(auth)/Verification', {
+        email: email,
+      }
+      );
     },
     onError: (error) => {
     setError(error.response.data.message)

@@ -28,7 +28,11 @@ export default function Signup() {
     onSuccess: async (response) => {
       const token = response.data.token;
       await AsyncStorage.setItem('token', token);
-      router.replace('/(tabs)');
+     
+      router.replace({
+        pathname:'/(auth)/Verification',
+        params: { email },
+      });
     },
     onError: (error) => {
         

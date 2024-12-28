@@ -9,7 +9,7 @@ import { Picker } from '@react-native-picker/picker';
 
 import UseFetchCatagories from '../../hooks/UseFetchCatagories';
 
-
+// @ts-nocheck
 
 export default function Add() {
   const { data } = UseFetchCatagories();
