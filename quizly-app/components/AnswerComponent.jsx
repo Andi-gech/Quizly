@@ -1,19 +1,25 @@
+// AnswerComponent.js
 import React, { useRef, useEffect } from 'react';
 import { Animated, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MotiView, AnimatePresence } from 'moti';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
-export default function AnswerComponent({ name, id,onPress, iscorrect, selected }) {
+export default function AnswerComponent({ name, id, onPress, iscorrect, selected }) {
   const shakeAnimation = useRef(new Animated.Value(0)).current;
+  const scaleAnimation = useRef(new Animated.Value(1)).current;
 
-  const getBackgroundColor = () => {
+  const getBackground = () => {
     if (selected === id) {
-      return iscorrect ? 'bg-green-400' : 'bg-red-400';
+      return iscorrect 
+        ? ['#10b981', '#059669']
+        : ['#ef4444', '#dc2626'];
     }
     if (selected && iscorrect) {
-      return 'border-green-400 border-[2px] bg-indigo-400';
+      return ['#3b82f6', '#2563eb'];
     }
-    return 'bg-indigo-400';
+    return ['#334155', '#1e293b'];
   };
 
   const shake = () => {
@@ -41,29 +47,72 @@ export default function AnswerComponent({ name, id,onPress, iscorrect, selected 
     ]).start();
   };
 
+  const bounce = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnimation, {
+        toValue: 1.1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnimation, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   useEffect(() => {
-    if (selected === id && !iscorrect) {
-      shake();
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    if (selected === id) {
+      if (iscorrect) {
+        bounce();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        shake();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
     }
   }, [selected]);
 
   return (
-    <Animated.View style={{ transform: [{ translateX: shakeAnimation }] }}>
+    <Animated.View style={{ transform: [{ translateX: shakeAnimation }, { scale: scaleAnimation }] }}>
       <TouchableOpacity
-      disabled={selected?true:false}
+        disabled={!!selected}
         onPress={onPress}
-        className={`flex w-full min-h-[60px] ${getBackgroundColor()} rounded-full  text-start flex-row items-center justify-center mt-5 p-[10px] `}
+        className="w-full  rounded-xl overflow-hidden my-2"
+        activeOpacity={0.8}
       >
-        <Text className="text-white text-center">{name}</Text>
-        {iscorrect && selected === id && (
-          <Ionicons
-            name="checkmark-circle"
-            size={24}
-            className="absolute right-[30px]"
-            color="white"
-          />
-        )}
+        <LinearGradient
+          colors={getBackground()}
+          className="flex-row items-center justify-between p-9"
+          style={{ padding: 20, borderRadius: 20, overflow: 'hidden',display:"flex",flexDirection:"row",justifyContent:"space-between",alignItems:"center" }}
+          start={[0, 0.5]}
+          end={[1, 0.5]}
+        >
+          <Text 
+            className="text-white text-sm flex-1 pr-6"
+            numberOfLines={4}
+            ellipsizeMode="tail"
+          >
+            {name}
+          </Text>
+          
+          <AnimatePresence>
+            {iscorrect && selected === id && (
+              <MotiView
+                from={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring' }}
+              >
+                <Ionicons
+                  name="checkmark-circle"
+                  size={24}
+                  color="#fff"
+                />
+              </MotiView>
+            )}
+          </AnimatePresence>
+        </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
   );

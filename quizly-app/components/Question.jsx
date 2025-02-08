@@ -1,8 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+// Question.js
+import { View, Text, ScrollView, TouchableOpacity, useWindowDimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { MotiView, AnimatePresence } from 'moti';
 import RoundedButton from './RoundedButton';
 import AnswerComponent from './AnswerComponent';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Question({
   current,
@@ -11,9 +15,10 @@ export default function Question({
   id,
   onnext,
   onclose,
-
   AnswerQuestion,
 }) {
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const [explanationVisible, setExplanationVisible] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
 
@@ -28,55 +33,118 @@ export default function Question({
   };
 
   return (
-    <View className="flex absolute h-screen w-screen flex-col items-center justify-center pt-[20px]">
-      <View className="absolute w-screen h-screen bg-black opacity-50" />
+    <LinearGradient
+      colors={['#0f172a', '#1e293b']}
+      style={{
+        flex: 1,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+      }}
+    >
+      <View className="flex-1 justify-between px-4">
+        {/* Question Container */}
+        <View style={{ flex: 1, marginTop: 16 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 120 }}
+          >
+            <View className="px-4 py-6">
+              <MotiView
+                from={{ opacity: 0, translateY: 20 }}
+                animate={{ opacity: 1, translateY: 0 }}
+              >
+                <Text className="font-bold text-[18px] text-white mb-6 leading-6">
+                  {current + 1}. {question}
+                </Text>
+              </MotiView>
 
-      <View className="flex items-center justify-start flex-col mt-5 bg-white py-[20px] px-[5px] w-[98%] rounded-[30px]">
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View className="w-full py-[20px] px-3">
-            <Text className="font-bold text-[17px]">
-              {current + 1}. {question}
-            </Text>
-            {answers.map((answer) => (
-              <AnswerComponent
-                key={answer._id}
-                selected={selectedAnswer}
-                id={answer._id}
-                iscorrect={Boolean(answer.isCorrect)}
-                onPress={() => handleAnswerPress(answer._id)}
-                name={answer.text}
-              />
-            ))}
-          </View>
+              {answers.map((answer, index) => (
+                <MotiView
+                  key={answer._id}
+                  from={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 50 }}
+                  style={{ marginBottom: 12 }}
+                >
+                  <AnswerComponent
+                    selected={selectedAnswer}
+                    id={answer._id}
+                    iscorrect={Boolean(answer.isCorrect)}
+                    onPress={() => handleAnswerPress(answer._id)}
+                    name={answer.text}
+                  />
+                </MotiView>
+              ))}
+            </View>
 
-          {selectedAnswer && (
-            <RoundedButton
-              name="Explain Gemini✨"
-              bgcolor="bg-black px-[20px] py-[20px] w-[200px] rounded-full"
-              color="text-white"
-              onPress={() => setExplanationVisible(true)}
-            />
-          )}
+            {/* Explanation */}
+            <AnimatePresence>
+              {explanationVisible && (
+                <MotiView
+                  from={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-slate-700/30 mx-4 p-4 rounded-2xl border border-slate-600 my-4"
+                >
+                  <View className="flex-row items-center mb-2">
+                    <MaterialCommunityIcons 
+                      name="brain" 
+                      size={20} 
+                      color="#f59e0b" 
+                    />
+                    <Text className="text-amber-400 font-bold text-lg ml-2">
+                      Explanation
+                    </Text>
+                  </View>
+                  <Text className="text-amber-100 text-sm leading-5">
+                    Plausible but incorrect answers designed to challenge the respondent's knowledge. 
+                    Randomize options to minimize bias. Use "All of the Above" sparingly.
+                  </Text>
+                </MotiView>
+              )}
+            </AnimatePresence>
+          </ScrollView>
+        </View>
 
-          {explanationVisible && (
-            <Text className="text-sm px-3 font-bold">
-              <Text className="text-indigo-700 font-bold text-[20px]">
-                Explanation
-              </Text>{" "}
-              Plausible but incorrect answers designed to challenge the respondent's knowledge. Randomize options to minimize bias. Use "All of the Above" sparingly.
-            </Text>
-          )}
-
+        {/* Bottom Buttons */}
+        <View className="flex-row justify-between px-4 mb-6" style={{ maxHeight: 70 }}>
+          <RoundedButton
+            name="Close"
+            onPress={onclose}
+            bgcolor="bg-slate-700 px-6 py-4 rounded-xl"
+            color="text-white"
+            icon="close"
+            style={{ flex: 0.48 }}
+          />
           <RoundedButton
             name="Next"
             onPress={onnext}
-            bgcolor="bg-black px-[60px] py-[20px] min-h-[60px] rounded-full"
-            color="text-white"
+            bgcolor="bg-amber-400 px-6 py-4 rounded-xl"
+            color="text-black font-bold"
+            icon="arrow-right"
+            style={{ flex: 0.48 }}
           />
-        </ScrollView>
-      </View>
-      <RoundedButton name="Close Quiz" onPress={onclose} bgcolor="bg-red-500 px-[60px] py-[20px] min-h-[40px] rounded-full" color="text-white" />
+        </View>
 
-    </View>
+        {/* Explain Button */}
+        <AnimatePresence>
+          {selectedAnswer && !explanationVisible && (
+            <MotiView
+              from={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute bottom-24 w-full items-center"
+            >
+              <RoundedButton
+                name="Explain Answer"
+                bgcolor="bg-amber-400 px-8 py-4 rounded-xl"
+                color="text-black font-bold"
+                icon="lightbulb-on"
+                onPress={() => setExplanationVisible(true)}
+              />
+            </MotiView>
+          )}
+        </AnimatePresence>
+      </View>
+    </LinearGradient>
   );
 }

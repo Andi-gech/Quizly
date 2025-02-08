@@ -1,15 +1,16 @@
-import { View, TextInput,Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RoundedButton from '../../components/RoundedButton';
 import api from '../../utils/Api';
-import { Ionicons as Ioicon } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import LoadingPage from '../../components/LoadingPage';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-
+import * as Haptics from 'expo-haptics';
 
 export default function Login() {
   const router = useRouter();
@@ -19,88 +20,139 @@ export default function Login() {
 
   const mutation = useMutation({
     mutationFn: async (credentials) => {
-      return await api.post(
-        '/api/auth/login',
-        credentials
-      );
+      return await api.post('/api/auth/login', credentials);
     },
     onSuccess: async (response) => {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       const token = response.data.token;
       await AsyncStorage.setItem('token', token);
-      if(response.data.isVerified){
+      
+      if(response.data.isVerified) {
+      
         router.replace('/(tabs)');
       }
-
-      router.replace('/(auth)/Verification', {
-        email: email,
-      }
-      );
+      router.replace({
+        pathname: '/(auth)/Verification',
+        params: { email },
+      });
     },
     onError: (error) => {
-    setError(error.response.data.message)
-  console.log(error)
-      setTimeout(() => {
-        setError('');
-      }, 3000);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setError(error.response?.data?.message || 'An error occurred');
+      setTimeout(() => setError(''), 3000);
     },
     mutationKey: ['login'],
   });
 
   return (
-    <View className="flex-1 items-center h-screen justify-center bg-black ..">
-   <View className="w-full h-[100px] items-center justify-center flex-row">
-   <MaterialCommunityIcons name="brain" size={74} color="white" />
-    <Text className="text-white text-[60px] font-bold">QUIZLY</Text>
-    </View>
-    {mutation.isLoading &&
-    <LoadingPage />}
-      <View className="  w-full  p-6 rounded-2xl">
-        <View className="h-[40px] items-center justify-center flex-row">
-      {error ? (
-          <View className="mt-4">
-            <Text className="text-yellow-400 text-center">{error}</Text>
+    <LinearGradient
+      colors={['#0f172a', '#1e293b']}
+     
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+
+      }}
+    >
+      <View
+        from={{ opacity: 0, translateY: 20 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        className="w-full items-center px-6"
+      >
+        {/* Logo Header */}
+        <View className="flex-row items-center mb-12">
+          <MaterialCommunityIcons 
+            name="brain" 
+            size={64} 
+            color="#f59e0b" 
+            style={{ marginRight: 10 }}
+          />
+          <Text className="text-amber-400 text-5xl font-bold">QUIZLY</Text>
+        </View>
+
+        {/* Error Message */}
+      
+          {error && (
+            <View
+              from={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="w-full mb-4 bg-amber-900/30 p-3 rounded-lg flex-row items-center"
+            >
+              <MaterialCommunityIcons 
+                name="alert-circle" 
+                size={20} 
+                color="#f59e0b" 
+              />
+              <Text className="text-amber-400 ml-2 flex-1">{error}</Text>
+            </View>
+          )}
+     
+
+        {/* Input Fields */}
+        <View className="w-full space-y-6">
+          <View className="bg-slate-800/50 rounded-xl p-3 flex-row items-center">
+            <Ionicons name="mail-outline" size={20} color="#64748b" />
+            <TextInput
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholderTextColor="#64748b"
+              className="flex-1 text-white text-base ml-3"
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
           </View>
-        ) : null}
+
+          <View className="bg-slate-800/50 mt-2 rounded-xl p-3 flex-row items-center">
+            <Ionicons name="lock-closed-outline" size={20} color="#64748b" />
+            <TextInput
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholderTextColor="#64748b"
+              className="flex-1 text-white text-base ml-3"
+              secureTextEntry
+            />
+          </View>
         </View>
-        <View className="mb-4">
-          <TextInput
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholderTextColor={"white"}
-            className="w-full h-[50px]  text-white rounded-[10px] bg-zinc-900   px-4 "
-          />
-        </View>
-        <View className="mb-6">
-          <TextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            placeholderTextColor={"white"}
-            secureTextEntry
-            className="w-full h-[50px]  text-white rounded-[10px] bg-zinc-900   px-4 "
-          />
-        </View>
-        <View className="items-center justify-center flex-col w-full h-[100px] mx-auto">
+
+        {/* Login Button */}
+        <View
+          from={{ opacity: 0, translateY: 20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ delay: 200 }}
+          className="w-full mt-8"
+        >
           <RoundedButton
             name="Login"
-            bgcolor="bg-white shadow-sm shadow-zinc-200"
-            color="text-black text-[20px] font-bold"
-            radius=" rounded-full px-[20px] w-full h-[50px]  py-[15px]"
-            onPress={() => {
-              mutation.mutate({ email, password });
-            }}
+            onPress={() => mutation.mutate({ email, password })}
+            bgcolor="bg-amber-400"
+            color="text-black font-bold text-lg"
+            radius="rounded-xl"
+            icon="login"
+            loading={mutation.isLoading}
           />
         </View>
-        <View className="items-center justify-center flex-col w-full h-[100px] mx-auto">
-        
-          <TouchableOpacity onPress={() => router.push('/(auth)/Signup')} className="w-full   rounded-[10px] items-center justify-start flex flex-row">
-            <Text className="text-white text-[14px] font-bold">Dont Have An Account??</Text>
-            <Text className="text-orange-400 text-[14px] font-bold">Register</Text>
-          </TouchableOpacity>
-        </View>
-       
+
+        {/* Signup Link */}
+        <TouchableOpacity 
+          onPress={() => router.replace('/(auth)/Signup')}
+          className="flex-row items-center p-6"
+        >
+          <Text className="text-slate-400">Don't have an account? </Text>
+          <Text className="text-amber-400 font-semibold">Register now</Text>
+          <MaterialCommunityIcons 
+            name="arrow-right" 
+            size={16} 
+            color="#f59e0b" 
+            style={{ marginLeft: 4 }}
+          />
+        </TouchableOpacity>
       </View>
-    </View>
+
+      {mutation.isLoading && <LoadingPage />}
+    </LinearGradient>
   );
 }

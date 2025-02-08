@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 export default function QuizProgress({addInfo,name,point,data}) {
   console.log(data,"da")
   return (
-    <View className="w-full bg-[rgba(255,255,255,0.1)] my-[10px] flex flex-row h-[80px] rounded-lg justify-between items-center px-[10px]">
+    <View    className=" flex flex-row justify-between w-full bg-slate-700/20 p-6 rounded-3xl ">
       <View >
         {addInfo &&
         <Text className=" text-[18px] text-zinc-200 font-semibold mb-1">{addInfo}</Text>}
@@ -16,8 +16,8 @@ export default function QuizProgress({addInfo,name,point,data}) {
         </View>
         
       </View>
-      <View className='w-[50px] h-[50px] bg-orange-300 rounded-full items-center justify-center' >
-        <Text className=' text-[12px] text-white font-bold  mb-1'>{point} </Text>
+      <View className='w-[50px] h-[50px] bg-amber-400 rounded-full items-center justify-center' >
+        <Text className=' text-[17px] text-black font-bold  '>{point} </Text>
       </View>
      
     </View>

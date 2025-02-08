@@ -19,7 +19,7 @@ export default function ProfileView() {
     <View className='w-full flex items-center  justify-between flex-row'>
         <View className='flex item-center justify-center'>
             <Text className='text-[12px] text-zinc-200 font-semibold mb-1'>{GetwellcomeMessage()}</Text>
-            <Text className='text-[19px] text-zinc-200 font-semibold mb-1'>{data?.data.username}</Text>
+            <Text className='text-[19px] text-zinc-200 font-semibold mb-1'>{data?.data?.username}</Text>
 
         </View>
         <Image className='w-[40px] h-[40px] rounded-full' alt='Avatar' src='https://avatar.iran.liara.run/public/44' />

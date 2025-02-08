@@ -14,8 +14,8 @@ import {
  QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { useColorScheme } from "react-native";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
 
 
 SplashScreen.preventAutoHideAsync();

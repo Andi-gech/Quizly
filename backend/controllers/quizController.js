@@ -1,6 +1,11 @@
 const Quiz = require('../models/quizModel');
 const User = require('../models/userModel');
 const pdf = require('pdf-parse');
+const officeParser = require('officeparser');
+const util = require('util');
+const parseOffice = util.promisify(officeParser.parseOffice);
+const tmp = require('tmp-promise');
+const fs = require('fs').promises;
 const { getQuizFromAI} = require('../services/generativeAIService');
 
 
@@ -249,36 +254,63 @@ exports.deleteQuiz = async (req, res) => {
 };
 exports.generateQuiz = async (req, res) => {
   try {
-  
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const pdfBuffer = req.file.buffer;
-    const data = await pdf(pdfBuffer);
-    console.log(data)
+    // Validate input
+    const { title, Catagory, questionCount, focusArea } = req.body;
+    if (!title || !Catagory) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
 
-    const pdfText = data.text;
+    const allowedMimeTypes = [/* existing types */];
+    const mimeType = req.file.mimetype;
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return res.status(400).json({ message: 'Unsupported file type' });
+    }
 
-   
-    const quizData = await getQuizFromAI(pdfText);
- 
+    // Get user inputs
+    const numQuestions = parseInt(questionCount) || 20; // Default to 20
+    const studyFocus = focusArea || 'general content'; // Default if not provided
+
+    const fileBuffer = req.file.buffer;
+    let quizData;
+
+    if (mimeType === 'application/pdf') {
+      quizData = await getQuizFromAI(fileBuffer, mimeType, numQuestions, studyFocus);
+    } else {
+      // Process PowerPoint
+      let tempFile;
+      try {
+        tempFile = await tmp.file({ postfix: mimeType.includes('openxml') ? '.pptx' : '.ppt' });
+        await fs.writeFile(tempFile.path, fileBuffer);
+        const extractedText = await parseOffice(tempFile.path);
+        quizData = await getQuizFromAI(extractedText, null, numQuestions, studyFocus);
+      } finally {
+        if (tempFile) await tempFile.cleanup();
+      }
+    }
 
     const newQuiz = new Quiz({
-      title:req.body.title,  
-      description: 'A quiz generated from the uploaded PDF content',
-      Catagory:req.body.Catagory,
-      questions: quizData,  
-      createdBy: req.user.id,  
+      title,
+      description: 'AI-generated quiz',
+      Catagory,
+      questionCount: numQuestions,
+      focusArea: studyFocus,
+      questions: quizData,
+      createdBy: req.user.id,
     });
 
     const savedQuiz = await newQuiz.save();
-
-    
     res.status(201).json(savedQuiz);
+
   } catch (error) {
-    console.log('Error generating quiz:', error);
-    res.status(500).json({ message: 'Error generating quiz', error: error.message });
+    console.error('Quiz generation error:', error);
+    res.status(500).json({ 
+      message: 'Quiz generation failed',
+      error: error.message 
+    });
   }
 };
 

@@ -15,6 +15,8 @@ const quizSchema = new mongoose.Schema({
       ],
     },
   ],
+  questionCount: { type: Number },
+  focusArea: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   Catagory: { type: mongoose.Schema.Types.ObjectId, ref: 'Catagory' },
   history: [

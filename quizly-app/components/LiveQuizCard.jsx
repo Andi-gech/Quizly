@@ -15,19 +15,57 @@ export default function LiveQuizCard({data}) {
    })
 
   }
+  console.log(data,"data")
   return (
-    <TouchableOpacity onPress={handleclick} className="w-full bg-white shadow-sm my-[5px] flex flex-row h-[80px] rounded-lg justify-between items-center px-[10px]">
-   <View className='w-[60px] h-[60px] bg-zinc-900 raduis-[30px] flex items-center justify-center' >
-   <MaterialCommunityIcons name="brain" size={24} color="white" />
-
-    </View>
-    <View className='flex flex-col items-center justify-center'>
-       <Text className='font-bold text-[16px]'>{data?.title}</Text>
-         <Text className='text-zinc-600 text-[12px]  mb-1'>{data?.numberOfQuestions} Questions Available</Text>
-
-    </View>
-    <FontAwesome name="angle-right" size={24} color="black" />
-    </TouchableOpacity>
+    <TouchableOpacity
+                  className="bg-slate-800/40 p-4 rounded-2xl"
+                  onPress={handleclick}
+                >
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-1 space-y-2">
+                      <Text className="text-white text-lg font-semibold">
+                        {data?.title}
+                      </Text>
+                      
+                      <View className="flex-row items-center space-x-4">
+                        <View className="flex-row items-center space-x-1">
+                          <MaterialCommunityIcons 
+                            name="book" 
+                            size={16} 
+                            color="#94a3b8" 
+                          />
+                          <Text className="text-slate-400 text-sm">
+                            {data?.category}
+                          </Text>
+                        </View>
+                        
+                        <View className="flex-row items-center space-x-1">
+                          <MaterialCommunityIcons 
+                            name="help-circle" 
+                            size={16} 
+                            color="#94a3b8" 
+                          />
+                          <Text className="text-slate-400 text-sm">
+                            {data?.questions?.length} questions
+                          </Text>
+                        </View>
+                      </View>
+                      
+                      <View className="w-full bg-slate-700/30 h-1 rounded-full">
+                        <View 
+                          className="h-full bg-amber-400 rounded-full" 
+                          style={{ width: `${Math.min((data?.progress || 0) * 100, 100)}%` }}
+                        />
+                      </View>
+                    </View>
+                    
+                    <MaterialCommunityIcons 
+                      name="chevron-right" 
+                      size={24} 
+                      color="#f59e0b" 
+                    />
+                  </View>
+                </TouchableOpacity>
   )
 }
 

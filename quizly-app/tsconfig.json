@@ -20,5 +20,5 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-, "app/(auth)/Verification.js", "app/(tabs)/add.js", "app/(tabs)/add.js"  ]
+, "app/(auth)/Verification.js", "app/(tabs)/add.js", "app/(tabs)/add.js", "app/(tabs)/index.js"  ]
 }
