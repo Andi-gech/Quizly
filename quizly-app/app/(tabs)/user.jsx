@@ -10,14 +10,16 @@ import UseFetchUserData from '../../hooks/UseFetchUserData';
 import { useMutation } from '@tanstack/react-query';
 import api from '../../utils/Api';
 import LoadingPage from '../../components/LoadingPage';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function UserProfile() {
   const router = useRouter();
-  const { data: user } = UseFetchUserData();
+  const { data: user,isLoading } = UseFetchUserData();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [username, setUsername] = useState('');
   const { data } = UseFetchStats();
+  const theme = useTheme();
 
   const updateUsername = async ({ username }) => {
     return await api.put('/api/auth/update', { username });
@@ -40,16 +42,17 @@ export default function UserProfile() {
     await AsyncStorage.removeItem('token');
     router.replace('/(auth)/login');
   };
-
+console.log(user?.data)
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
+      colors={[  theme.colors.background[1], theme.colors.background[0] ]}
       className="flex-1 relative"
       style={{
-        height:"100%"
+        height:"100%",
+       
       }}
     >
-      {/* Notification Toasts */}
+
     
         {success && (
           <View
@@ -94,16 +97,15 @@ export default function UserProfile() {
       {/* Profile Content */}
       <View
         from={{ opacity: 0, translateY: 50 }}
+        
         animate={{ opacity: 1, translateY: 0 }}
-        className="flex-1 relative bg-white dark:bg-zinc-900 rounded-t-[40px] mt-20 p-6"
-        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20 }}
+        className="flex-1 relative  rounded-t-[40px] mt-20 p-6"
+        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, backgroundColor: theme.colors.background[0] }}
       >
-        {/* Profile Image */}
+       
         <View
-          className="absolute -top-[60px] w-full flex items-center  justify-center"
-          style={{ transform: [{ translateX: -60 }] }}
-          from={{ scale: 0.8 }}
-          animate={{ scale: 1 }}
+          className="absolute -top-[60px]  w-screen flex items-center  justify-center"
+         
           
         >
           <LinearGradient
@@ -117,29 +119,32 @@ export default function UserProfile() {
           >
             <Image
               className="w-32 h-32 rounded-full border-4 border-white"
-              source={{ uri: 'https://avatar.iran.liara.run/public/44' }}
+              source={{ uri: user?.data.photo||'https://avatar.iran.liara.run/public/44' }}
             />
           </LinearGradient>
         </View>
 
-        {/* Stats Cards */}
-        <View className="flex-row mt-[100px] justify-between mb-8">
+     
+        <View className="flex-row mt-[50px] justify-between mb-8">
           <StatCard
             icon="gift"
             value={`${data?.data?.totalPoints} pts`}
             label="Points"
+            theme={theme}
             color="#f59e0b"
           />
           <StatCard
             icon="file-tray"
             value={`${data?.data?.totalQuizzesTaken}`}
             label="Quizzes"
+            theme={theme}
             color="#3b82f6"
           />
           <StatCard
             icon="bulb"
             value={`${data?.data?.totalQuestionsDone}`}
             label="Questions"
+            theme={theme}
             color="#10b981"
           />
         </View>
@@ -148,6 +153,7 @@ export default function UserProfile() {
         <View className="space-y-6">
           <FormField
             label="Username"
+            theme={theme}
             icon="person"
             value={username}
             placeholder={user?.data?.username}
@@ -155,6 +161,7 @@ export default function UserProfile() {
           />
           <FormField
             label="Email"
+            theme={theme}
             
             icon="mail"
             value={user?.data?.email}
@@ -169,48 +176,64 @@ export default function UserProfile() {
           animate={{ opacity: 1, scale: 1 }}
         >
           <RoundedButton
-            name={mutation.isLoading ? "Updating..." : "Update Profile"}
+           label={mutation.isLoading ? "Updating..." : "Update Profile"}
             onPress={handleUpdate}
             bgcolor="bg-amber-400"
             color="text-black text-lg font-bold"
             radius="rounded-xl"
-            icon={mutation.isLoading ? "refresh" : "save"}
+            icon={mutation.isLoading ? "refresh" : "file"}
             disabled={mutation.isLoading}
           />
         </View>
       </View>
 
-      {mutation.isLoading && <LoadingPage accentColor="#f59e0b" />}
+      {mutation.isLoading||isLoading && <LoadingPage accentColor="#f59e0b" />}
     </LinearGradient>
   );
 }
 
-const StatCard = ({ icon, value, label, color }) => (
+const StatCard = ({ icon, value, label, color,theme }) => (
   <View
-    className="bg-white dark:bg-zinc-800 p-4 rounded-xl items-center flex-1 mx-1"
-    style={{ shadowColor: color, shadowOpacity: 0.1, shadowRadius: 10 }}
+  
+    className=" p-4 rounded-xl items-center flex-1 mx-1"
+    style={{ shadowColor: color, shadowOpacity: 0.1, shadowRadius: 10,backgroundColor: theme.colors.card[0] }}
     from={{ scale: 0.9 }}
     animate={{ scale: 1 }}
   >
     <View className="bg-black/5 p-2 rounded-full mb-2">
       <Ionicons name={icon} size={20} color={color} />
     </View>
-    <Text className="text-black dark:text-white font-bold text-lg">{value}</Text>
-    <Text className="text-zinc-500 dark:text-zinc-400 text-xs">{label}</Text>
+    <Text style={{
+      color: color,
+    }} className="text-black dark:text-white font-bold text-lg">{value}</Text>
+    <Text style={
+      {
+        color:theme.colors.text
+      }
+    } className=" text-xs">{label}</Text>
   </View>
 );
 
-const FormField = ({ label, icon, ...props }) => (
+const FormField = ({ label, icon, theme,...props }) => (
   <View
-    className="space-y-2"
+    className="space-y-2 mt-3"
     from={{ opacity: 0, translateX: -10 }}
     animate={{ opacity: 1, translateX: 0 }}
   >
-    <View className="flex-row items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg px-4 h-14">
+    <View style={
+      {
+        backgroundColor:theme.colors.card[0],
+        shadowColor:theme.colors.text,
+        shadowOpacity:0.1,
+        shadowRadius:10
+      }
+    } className="flex-row items-center  rounded-lg px-4 h-14">
       <Ionicons name={icon} size={20} color="#64748b" />
       <TextInput
         className="flex-1 ml-3 text-zinc-800 dark:text-white text-base"
         placeholderTextColor="#94a3b8"
+        style={{ color: theme.colors.text }}
+
         {...props}
       />
     </View>

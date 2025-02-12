@@ -2,13 +2,15 @@ import React, { useEffect } from "react";
 import { useColorScheme, View } from "react-native";
 import { isAuthenticated } from "../utils/auth";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "../context/ThemeContext";
 
 import { useRootNavigationState, useRouter, useSegments } from "expo-router";
 
 const Index = () => {
   const segments = useSegments();
   const router = useRouter();
-  const colorScheme = useColorScheme();
+  const { theme } = useTheme();
+
   const navigationState = useRootNavigationState();
 
 
@@ -18,6 +20,7 @@ const Index = () => {
     const inAuthGroup = segments[0] === "(auth)";
     const checkAuth = async () => {
       const loggedIn = await isAuthenticated();
+      
       if (!loggedIn && !inAuthGroup) {
     
         router.push("/(auth)/login");
@@ -33,8 +36,7 @@ const Index = () => {
 
   return (
     <View>
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-   
+  
     </View>
   );
 };

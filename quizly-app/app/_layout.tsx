@@ -1,10 +1,7 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+
+import { ThemeProvider } from '../context/ThemeContext';
 import { useFonts } from "expo-font";
-import { router, Stack, useRouter } from "expo-router";
+import {  Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -15,6 +12,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { useColorScheme } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 
 
@@ -23,6 +21,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
+  const theme = useTheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -41,8 +40,8 @@ export default function RootLayout() {
   const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <StatusBar />
+    <ThemeProvider>
+    <StatusBar style={!theme?.isDarkMode ? "dark" : "light"} />
       <Stack initialRouteName="index" screenOptions={{ headerShown: false }} />
       
     </ThemeProvider>

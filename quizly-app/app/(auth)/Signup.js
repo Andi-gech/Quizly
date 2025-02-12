@@ -24,14 +24,18 @@ export default function Signup() {
     },
     onSuccess: async (response) => {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      const token = response.data.token;
-      await AsyncStorage.setItem('token', token);
+      
       router.replace({
         pathname: '/(auth)/Verification',
         params: { email },
       });
     },
     onError: (error) => {
+      console.log(
+        JSON.stringify(
+          error.response
+        )
+      );
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(error?.response?.data?.message || 'Registration failed');
       setTimeout(() => setError(''), 3000);
@@ -150,7 +154,7 @@ export default function Signup() {
             className="w-full mt-8"
           >
             <RoundedButton
-              name="Register"
+              label="Register"
               onPress={() => mutation.mutate({ username, email, password })}
               bgcolor="bg-amber-400"
               color="text-black font-bold text-lg"

@@ -6,6 +6,7 @@ import Header from '../../components/Header';
 import UseFetchLiveQuizes from '@/hooks/UseFetchLiveQuizes';
 import LiveQuizCard from '@/components/LiveQuizCard';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Category() {
   const { id, name } = useLocalSearchParams();
@@ -15,10 +16,11 @@ export default function Category() {
   useEffect(() => {
     refetch();
   }, [id]);
+  const theme = useTheme();
 
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
+      colors={theme.colors.background}
       className="flex-1"
       style={{ height: '100%' }}
     >

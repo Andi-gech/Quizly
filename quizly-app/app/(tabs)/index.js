@@ -1,126 +1,169 @@
-import { View, Text, FlatList, TouchableOpacity,RefreshControl } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, FlatList, RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { StatusBar } from "expo-status-bar";
+import { useTheme } from "../../context/ThemeContext";
 import RoundedButton from "../../components/RoundedButton";
 import QuizProgress from "../../components/QuizProgress";
-import Profileview from "../../components/ProfileView";
+import ProfileView from "../../components/ProfileView";
 import UseFetchMyQuiz from "../../hooks/UseFetchMyQuiz";
 import LoadingPage from "../../components/LoadingPage";
-import LiveQuizCard from "@/components/LiveQuizCard";
+import LiveQuizCard from "../../components/LiveQuizCard";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function HomeScreen() {
+  const theme = useTheme();
   const { data, isLoading, refetch } = UseFetchMyQuiz();
   const router = useRouter();
 
-  const NavigateToQuizes = () => router.replace("/search");
-
+  const NavigateToQuizes = () => router.push("/search");
+console.log(data?.data)
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
-      className="flex-1 min-h-screen relative"
-      style={{ width:"100%", height:"100%" }}
-    >
-      {/* Header Section */}
-      <View className="pt-14 px-9 pb-4">
-        <View className="flex-row justify-between items-center mb-6">
-          <Profileview />
-          
-        </View>
-
-        {/* Current Progress */}
+      colors={theme.colors.background}
+      style={{ 
+        flex: 1,
+        paddingTop: 50,
+      }}>
+      <StatusBar style={!theme?.isDarkMode ? "dark" : "light"} />
+      
+      <View style={{ paddingHorizontal: 24 }}>
+        <ProfileView />
+        
         {data?.data[0] && (
-          <View
-            
-          >
-            <QuizProgress 
-              addInfo="Recent Quiz"
+          <QuizProgress 
+            addInfo="Recent Quiz"
             data={data?.data[0]}
             name={data?.data[0].title}
-            
-              point="20"
-            />
-          </View>
+            point={data?.data[0].point}
+          />
         )}
       </View>
 
-      {/* Welcome Section */}
-      <View
-        
-        className="mx-6 my-6 bg-slate-700/20 p-6 rounded-3xl"
+      <LinearGradient
+        colors={theme.colors.card}
+        style={{
+          marginInline: 24,
+          padding: 20,
+          borderRadius: 20,
+          shadowColor: theme?.colors.text,
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+        }}
       >
-        <View className="space-y-4">
-          <View className="flex-row items-center space-x-3">
-            <MaterialCommunityIcons 
-              name="rocket-launch" 
-              size={32} 
-              color="#f59e0b" 
-            />
-            <Text className="text-2xl font-bold text-white">
+        <View style={{ gap: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <LinearGradient
+              colors={theme.colors.accent}
+              style={{ borderRadius: 8, padding: 4,
+              shadowColor: theme?.colors.text,
+              shadowOpacity: 0.1,
+              shadowRadius: 10,
+               }}
+            >
+              <MaterialCommunityIcons 
+                name="rocket-launch" 
+                size={28} 
+                color="white" 
+              />
+            </LinearGradient>
+            <Text style={{
+              fontSize: 22,
+              fontWeight: '700',
+              background: theme.colors.textGradient,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+             color: "orange",
+            }}>
               Welcome to Quizly
             </Text>
           </View>
           
-          <Text className="text-slate-400 text-base">
+          <Text style={{
+            fontSize: 16,
+            color: theme?.colors.secondaryText,
+            lineHeight: 24,
+          }}>
             Discover new challenges and expand your knowledge
           </Text>
           
           <RoundedButton
-            name="Explore Quizzes"
+            label="Explore Quizzes"
             icon="arrow-right"
-            bgcolor="bg-amber-400"
-            color="text-black text-lg font-bold"
-            radius="rounded-xl"
             onPress={NavigateToQuizes}
-            style={{ shadowColor: '#f59e0b', shadowOpacity: 0.4 }}
+            gradient={theme.colors.accent}
           />
         </View>
-      </View>
+      </LinearGradient>
 
-      {/* Quiz List Section */}
-      
-        <View className="flex-1 px-4">
-          <Text className="text-white text-xl font-bold mb-4 ml-2">
-            Live Quizzes
+      <View style={{ flex: 1, paddingHorizontal: 24 }}>
+        <View 
+          style={{
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 8,
+            marginBottom: 16
+          }}
+        >
+          <Text style={{
+
+            fontSize: 20,
+            fontWeight: '700',
+            color: theme.colors.text
+          }}>
+            Your Quizzes
           </Text>
-          
-          <FlatList
-            data={data?.data}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 40 }}
-            refreshControl={
-              <RefreshControl
-                refreshing={isLoading}
-                onRefresh={refetch}
-                tintColor="#f59e0b"
-              />
-            }
-
-            renderItem={({ item, index }) => (
-              <View
-               
-                className="mb-4"
+        </View>
+        
+        <FlatList
+          data={data?.data}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={refetch}
+              tintColor={theme?.colors.accent}
+            />
+          }
+          renderItem={({ item }) => (
+            <LiveQuizCard data={item} />
+          )}
+          ListEmptyComponent={
+            <LinearGradient
+              colors={theme.colors.card}
+              style={{ 
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 32,
+                gap: 16,
+              }}
+            >
+              <LinearGradient
+                colors={theme.colors.highlight}
+                style={{ 
+                  borderRadius: 20,
+                  padding: 12
+                }}
               >
-               <LiveQuizCard data={item} />
-              </View>
-            )}
-            ListEmptyComponent={
-              <View className="items-center justify-center py-8">
                 <MaterialCommunityIcons 
                   name="magnify" 
-                  size={48} 
-                  color="#475569" 
+                  size={40} 
+                  color="white" 
                 />
-                <Text className="text-slate-500 mt-4">
-                  No quizzes available yet
-                </Text>
-              </View>
-            }
-          />
-        </View>
-    
+              </LinearGradient>
+              <Text style={{
+                color: theme?.colors.secondaryText,
+                fontSize: 16,
+              }}>
+                No quizzes available yet
+              </Text>
+            </LinearGradient>
+          }
+        />
+      </View>
     </LinearGradient>
   );
 }

@@ -1,53 +1,51 @@
-import { TouchableOpacity, Text, View } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../context/ThemeContext';
 
 export default function RoundedButton({
-  radius = 'rounded-lg',
-  color = 'text-white',
-  bgcolor = 'bg-slate-700',
-  name,
+  label,
   onPress,
-  leftIcon,
-  rightIcon,
-  border = 'border-0',
-  padding = 'px-4 py-3',
-  customStyle,
-  textWrap = false
+  icon,
+  style,
+  othercolor
 }) {
-  return (
-    <View
-   
-      transition={{ type: 'timing' }}
-    >
-      <TouchableOpacity
-        className={`flex-row items-center justify-center ${padding} ${border} ${radius} ${bgcolor} ${color}`}
-        onPress={onPress}
-        activeOpacity={0.8}
-        style={[
-          {
-            shadowColor: '#f59e0b',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.2,
-            shadowRadius: 4,
-            elevation: 3
-          },
-          customStyle
-        ]}
-      >
-        {leftIcon && (
-         leftIcon
-        )}
-        
-        <Text 
-          className={`${color} font-semibold text-base ${textWrap ? 'flex-wrap' : 'flex-shrink'}`}
-          numberOfLines={2}
-        >
-          {name}
-        </Text>
+  const theme = useTheme();
 
-        {rightIcon && (
-         rightIcon
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
+      style={[{ borderRadius: 12, overflow: 'hidden' }, style]}
+    >
+      <LinearGradient
+        colors={othercolor||theme.colors.accent}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 12,
+          paddingVertical: 16,
+          paddingHorizontal: 24,
+        }}
+      >
+        <Text style={{
+          color: theme.colors.text,
+          fontSize: 16,
+          fontWeight: '600',
+        }}>
+          {label}
+        </Text>
+        {icon && (
+          <MaterialCommunityIcons
+            name={icon}
+            size={20}
+            color="white"
+          />
         )}
-      </TouchableOpacity>
-    </View>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 }

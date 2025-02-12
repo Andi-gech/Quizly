@@ -9,8 +9,11 @@ import { useMutation } from '@tanstack/react-query';
 import api from '@/utils/Api';
 import { Picker } from '@react-native-picker/picker';
 import UseFetchCatagories from '../../hooks/UseFetchCatagories';
+import { useTheme } from '../../context/ThemeContext';
+import LoadingPage from '@/components/LoadingPage';
 
 export default function Add() {
+  const theme = useTheme();
   const { data } = UseFetchCatagories();
   const [file, setFile] = useState({ name: '', uri: '' });
   const [quizName, setQuizName] = useState('');
@@ -21,11 +24,12 @@ export default function Add() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const pickerRef = useRef(null);
-
   const handleFileSelection = async () => {
     try {
-      const res = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf'], // Restrict to PDF only
+    const res = await DocumentPicker.getDocumentAsync({
+    type: ['application/pdf','application/vnd.openxmlformats-officedocument.presentationml.presentation','application/vnd.ms-powerpoint'],
+   
+    
       });
       if (res.assets) {
         if (res.assets[0].size > 10000000) {
@@ -38,93 +42,115 @@ export default function Add() {
     } catch (err) {
       console.error('Error picking file:', err);
     }
-  };
-
-  const { mutate: uploadFile, isLoading } = useMutation(
+    
+    };
+    
+    const { mutate: uploadFile, isLoading } = useMutation(
     async (formData) => {
-      const response = await api.post('/api/quizzes/generateQuiz', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setProgress(percentCompleted);
-        }
-      });
-      return response.data;
+    const response = await api.post('/api/quizzes/generateQuiz', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: (progressEvent) => {
+    const percentCompleted = Math.round(
+    (progressEvent.loaded * 100) / progressEvent.total
+    );
+    setProgress(percentCompleted);
+    }
+    });
+    return response.data;
     },
     {
-      onSuccess: (data) => {
-        setSuccessMessage("Quiz Generated Successfully");
-        setTimeout(() => setSuccessMessage(''), 3000);
-      },
-      onError: (error) => {
-        setError(error.response?.data?.message || "Error generating quiz");
-        setTimeout(() => setError(''), 3000);
-      },
+    onSuccess: (data) => {
+    setSuccessMessage("Quiz Generated Successfully");
+    setTimeout(() => setSuccessMessage(''), 3000);
+    },
+    onError: (error) => {
+    setError(error.response?.data?.message || "Error generating quiz");
+    setTimeout(() => setError(''), 3000);
+    },
     }
-  );
-
-  const handleGenerateQuiz = () => {
+    );
+    
+    const handleGenerateQuiz = () => {
     if (file.uri && quizName && selectedCatagory && questionCount) {
-      const formData = new FormData();
-      formData.append('title', quizName);
-      formData.append('Catagory', selectedCatagory);
-      formData.append('questionCount', questionCount);
-      formData.append('focusArea', focusArea);
-      formData.append('file', {
-        name: file.name,
-        uri: file.uri,
-        type: 'application/pdf',
-      });
-      uploadFile(formData);
+    const formData = new FormData();
+    formData.append('title', quizName);
+    formData.append('Catagory', selectedCatagory);
+    formData.append('questionCount', questionCount);
+    formData.append('focusArea', focusArea);
+    formData.append('file', {
+    name: file.name,
+    uri: file.uri,
+    type: 'application/pdf',
+    });
+    uploadFile(formData);
     } else {
-      setError('Please fill all required fields');
-      setTimeout(() => setError(''), 3000);
+    setError('Please fill all required fields');
+    setTimeout(() => setError(''), 3000);
     }
-  };
-
+    };
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
+      colors={theme.colors.background}
       className="flex-1"
-      style={{ height: '100%', paddingTop: 20,flex:1 }}
+      style={{ height: '100%', paddingTop: 20, flex: 1 }}
+      
     >
       <Header name="Create Quiz" showback={false} />
+      {
+        isLoading && (
+          <LoadingPage quiz={true}/>
+        )
+      }
       
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
+        className="flex-1 px-4 mb-[70px]"
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          scrollsToTop={error || successMessage?true:false}
         >
-          <View
-            className="bg-slate-800 rounded-t-3xl p-6 min-h-[90vh]"
+          <LinearGradient
+            colors={
+              ["transparent", "transparent"]
+            }
+            className="rounded-t-3xl p-6 min-h-[90vh]"
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={{ 
-              shadowColor: '#f59e0b',
+              shadowColor: theme.colors.accent[0],
               shadowOffset: { width: 0, height: -10 },
               shadowOpacity: 0.1,
               shadowRadius: 20,
-              
             }}
           >
-            <Text className="text-white text-2xl font-bold mb-6 text-center">
+            <Text style={{ color: theme.colors.text }} className="text-2xl font-bold mb-6 text-center">
               Upload Learning Material
             </Text>
 
             {/* Messages Container */}
             <View className="">
               {successMessage && (
-                <View className="bg-green-800 p-3 rounded-lg mb-4">
-                  <Text className="text-green-400 text-center">{successMessage}</Text>
-                </View>
+                <LinearGradient
+                  colors={theme.colors.success}
+                  className="p-3 rounded-lg mb-4"
+                >
+                  <Text style={{ color: theme.colors.text }} className="text-center">
+                    {successMessage}
+                  </Text>
+                </LinearGradient>
               )}
               {error && (
-                <View className="bg-red-800 p-3 rounded-lg mb-4">
-                  <Text className="text-red-400 text-center">{error}</Text>
-                </View>
+                <LinearGradient
+                  colors={theme.colors.danger}
+                  className="p-3 rounded-lg mb-4"
+                >
+                  <Text style={{ color: theme.colors.text }} className="text-center">
+                    {error}
+                  </Text>
+                </LinearGradient>
               )}
             </View>
 
@@ -133,49 +159,81 @@ export default function Add() {
               <View>
                 {/* Quiz Name Input */}
                 <View className="mb-4">
-                  <Text className="text-slate-300 text-sm mb-2">Quiz Name</Text>
+                  <Text style={{ color: theme.colors.secondaryText }} className="text-sm mb-2">
+                    Quiz Name
+                  </Text>
                   <TextInput
                     placeholder="Enter Quiz Name"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor={theme.colors.secondaryText}
                     value={quizName}
                     onChangeText={setQuizName}
-                    className="bg-slate-700 text-white p-4 rounded-xl border border-slate-600"
+                    style={{
+                      backgroundColor: theme.colors.card[0],
+                      color: theme.colors.text,
+                      borderColor: theme.colors.border,
+                    }}
+                    className="p-4 rounded-xl border"
                   />
                 </View>
 
                 {/* Question Count Input */}
                 <View className="mb-4">
-                  <Text className="text-slate-300 text-sm mb-2">Number of Questions</Text>
+                  <Text style={{ color: theme.colors.secondaryText }} className="text-sm mb-2">
+                    Number of Questions
+                  </Text>
                   <TextInput
                     placeholder="Enter number of questions"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor={theme.colors.secondaryText}
                     value={questionCount}
                     onChangeText={setQuestionCount}
                     keyboardType="numeric"
-                    className="bg-slate-700 text-white p-4 rounded-xl border border-slate-600"
+                    style={{
+                      backgroundColor: theme.colors.card[0],
+                      color: theme.colors.text,
+                      borderColor: theme.colors.border,
+                    }}
+                    className="p-4 rounded-xl border"
                   />
                 </View>
 
                 {/* Focus Area Input */}
                 <View className="mb-4">
-                  <Text className="text-slate-300 text-sm mb-2">Focus Area (optional)</Text>
+                  <Text style={{ color: theme.colors.secondaryText }} className="text-sm mb-2">
+                    Focus Area (optional)
+                  </Text>
                   <TextInput
                     placeholder="e.g., Network Security, Calculus Basics"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor={theme.colors.secondaryText}
                     value={focusArea}
                     onChangeText={setFocusArea}
-                    className="bg-slate-700 text-white p-4 rounded-xl border border-slate-600"
+                    style={{
+                      backgroundColor: theme.colors.card[0],
+                      color: theme.colors.text,
+                      borderColor: theme.colors.border,
+                    }}
+                    className="p-4 rounded-xl border"
                   />
                 </View>
 
                 {/* Category Picker */}
                 <View className="mb-4">
-                  <Text className="text-slate-300 text-sm mb-2">Category</Text>
-                  <View className="bg-slate-700 rounded-xl border border-slate-600">
+                  <Text style={{ color: theme.colors.secondaryText }} className="text-sm mb-2">
+                    Category
+                  </Text>
+                  <View style={{
+                    backgroundColor: theme.colors.card[0],
+                  
+                    borderColor: theme.colors.border,
+                  }} className="rounded-xl border">
                     <Picker
                       ref={pickerRef}
                       selectedValue={selectedCatagory}
-                      style={{ color: "white" }}
+                      style={{ color: theme.colors.text }}
+                      itemStyle={{ color: theme.colors.text,
+                      borderColor: theme.colors.border,
+                      backgroundColor: theme.colors.card[0],
+                       }}
+
                       onValueChange={setSelectedCatagory}
                     >
                       <Picker.Item label="Select Category" value="" />
@@ -192,15 +250,20 @@ export default function Add() {
 
                 {/* File Upload Button */}
                 <View className="mb-6">
-                  <Text className="text-slate-300 text-sm mb-2">Upload PDF</Text>
+                  <Text style={{ color: theme.colors.secondaryText }} className="text-sm mb-2">
+                    Upload PDF
+                  </Text>
                   <RoundedButton
-                    name={file.name ? `Selected: ${file.name}` : "Select File"}
+                    label={file.name ? `Selected: ${file.name}` : "Select File"}
                     onPress={handleFileSelection}
-                    leftIcon={<Ionicons name="document-attach" size={20} color="#f59e0b" />}
-                    bgcolor="bg-slate-700"
-                    border="border border-slate-600"
+                    icon="attachment"
+                    
+                    
+                    
+                    bgcolor={theme.colors.card[0]}
+                    border={`border ${theme.colors.border}`}
                     radius="rounded-xl"
-                    color="text-white"
+                    color={theme.colors.text}
                     padding="p-4"
                     textWrap={true}
                   />
@@ -210,15 +273,17 @@ export default function Add() {
               {/* Generate Button & Progress Bar */}
               <View>
                 <RoundedButton
-                  name={isLoading ? "Generating..." : "Generate Quiz"}
+                  label={isLoading ? "Generating..." : "Generate Quiz"}
                   onPress={handleGenerateQuiz}
-                  leftIcon={<Ionicons name="sparkles" size={20} color="white" />}
-                  bgcolor="bg-amber-500"
+                  icon={isLoading ? "refresh" : "rocket"}
+                  othercolor={theme.isDarkMode?['black', 'rgb(96, 80, 139)', 'black']:theme.colors.card}
+                  
+                  bgcolor={theme.colors.accent}
                   radius="rounded-xl"
-                  color="text-white"
+                  color={theme.colors.text}
                   padding="p-4"
                   customStyle={{
-                    shadowColor: '#f59e0b',
+                    shadowColor: theme.colors.accent[0],
                     marginBottom: 100,
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.3,
@@ -226,16 +291,21 @@ export default function Add() {
                   }}
                 />
                 {progress > 0 && (
-                  <View className="mt-6 bg-slate-700 rounded-full h-2">
+                  <View style={{
+                    backgroundColor: theme.colors.card[0],
+                  }} className="mt-6 rounded-full h-2">
                     <View
-                      className="bg-amber-400 h-2 rounded-full"
-                      style={{ width: `${progress}%` }}
+                      style={{ 
+                        backgroundColor: theme.colors.accent[0],
+                        width: `${progress}%`
+                      }}
+                      className="h-2 rounded-full"
                     />
                   </View>
                 )}
               </View>
             </View>
-          </View>
+          </LinearGradient>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>

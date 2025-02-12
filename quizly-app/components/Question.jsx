@@ -7,7 +7,7 @@ import RoundedButton from './RoundedButton';
 import AnswerComponent from './AnswerComponent';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { useTheme } from '../context/ThemeContext';
 export default function Question({
   current,
   question,
@@ -31,10 +31,10 @@ export default function Question({
     setSelectedAnswer(answerId);
     AnswerQuestion(answerId, id);
   };
-
+  const theme = useTheme();
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
+      colors={theme.colors.background}
       style={{
         flex: 1,
         paddingTop: insets.top,
@@ -53,7 +53,9 @@ export default function Question({
                 from={{ opacity: 0, translateY: 20 }}
                 animate={{ opacity: 1, translateY: 0 }}
               >
-                <Text className="font-bold text-[18px] text-white mb-6 leading-6">
+                <Text style={{
+                  color: theme.colors.text,
+                }} className="font-bold text-[18px]  mb-6 leading-6">
                   {current + 1}. {question}
                 </Text>
               </MotiView>
@@ -83,7 +85,7 @@ export default function Question({
                 <MotiView
                   from={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-slate-700/30 mx-4 p-4 rounded-2xl border border-slate-600 my-4"
+                  className="bg-slate-700 mx-4 p-4 rounded-2xl border border-slate-600 my-4"
                 >
                   <View className="flex-row items-center mb-2">
                     <MaterialCommunityIcons 
@@ -135,7 +137,7 @@ export default function Question({
               className="absolute bottom-24 w-full items-center"
             >
               <RoundedButton
-                name="Explain Answer"
+                label="Explain Answer"
                 bgcolor="bg-amber-400 px-8 py-4 rounded-xl"
                 color="text-black font-bold"
                 icon="lightbulb-on"

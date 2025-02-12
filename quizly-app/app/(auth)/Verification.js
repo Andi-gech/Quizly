@@ -59,6 +59,7 @@ export default function Verification() {
       router.push("/(tabs)");
     },
     onError: (error) => {
+      console.error(JSON.stringify(error.response));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(error.response?.data?.message || "Verification failed");
       setTimeout(() => setError(""), 3000);
@@ -67,7 +68,7 @@ export default function Verification() {
 
   const resendCode = useMutation({
     mutationKey: ["resendCode"],
-    mutationFn: (data) => api.post("/api/auth/resendCode", data),
+    mutationFn: (data) => api.post("/api/auth/resendVerificationCode", data),
     onSuccess: async () => {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setSuccess("Code sent successfully");
@@ -75,6 +76,7 @@ export default function Verification() {
       setTimeout(() => setSuccess(""), 3000);
     },
     onError: (error) => {
+      console.error(JSON.stringify(error.response));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(error.response?.data?.message || "Error sending code");
       setTimeout(() => setError(""), 3000);
@@ -182,13 +184,17 @@ export default function Verification() {
 
           {/* Verify Button */}
           <RoundedButton
-            name="Verify"
-            onPress={() => mutation.mutate({ code: code.join("") })}
+            label="Verify"
+            onPress={() => mutation.mutate({ code: code.join(""), email: params.email })}
             bgcolor="bg-amber-400"
             color="text-black font-bold text-lg"
             radius="rounded-xl"
             icon="check-decagram"
             loading={mutation.isPending}
+            othercolor={
+              ['#f59e0b', '#f59e0b']
+            }
+            
             className="w-full mb-6"
           />
 
@@ -196,7 +202,7 @@ export default function Verification() {
           <TouchableOpacity
             onPress={() => resendCode.mutate({ email: params.email })}
             disabled={resendCooldown > 0}
-            className="flex-row items-center"
+            className="flex-row mt-5  p-4 items-center"
           >
             <Text className={`text-sm ${
               resendCooldown > 0 ? 'text-slate-500' : 'text-amber-400'

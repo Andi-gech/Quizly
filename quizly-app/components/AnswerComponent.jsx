@@ -3,8 +3,9 @@ import React, { useRef, useEffect } from 'react';
 import { Animated, Text, TouchableOpacity } from 'react-native';
 import { MotiView, AnimatePresence } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { useTheme } from '../context/ThemeContext';
 
 export default function AnswerComponent({ name, id, onPress, iscorrect, selected }) {
   const shakeAnimation = useRef(new Animated.Value(0)).current;
@@ -19,7 +20,7 @@ export default function AnswerComponent({ name, id, onPress, iscorrect, selected
     if (selected && iscorrect) {
       return ['#3b82f6', '#2563eb'];
     }
-    return ['#334155', '#1e293b'];
+    return theme.colors.card;
   };
 
   const shake = () => {
@@ -73,7 +74,7 @@ export default function AnswerComponent({ name, id, onPress, iscorrect, selected
       }
     }
   }, [selected]);
-
+  const theme = useTheme();
   return (
     <Animated.View style={{ transform: [{ translateX: shakeAnimation }, { scale: scaleAnimation }] }}>
       <TouchableOpacity
@@ -90,7 +91,11 @@ export default function AnswerComponent({ name, id, onPress, iscorrect, selected
           end={[1, 0.5]}
         >
           <Text 
-            className="text-white text-sm flex-1 pr-6"
+            style={{
+              color: theme.colors.text,
+             
+            }}
+            className=" text-sm flex-1 pr-6"
             numberOfLines={4}
             ellipsizeMode="tail"
           >

@@ -1,30 +1,58 @@
-import { StyleSheet, Text, View,Image } from 'react-native'
-import React from 'react'
-import UserFetchUserData from '../hooks/UseFetchUserData'
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
+import UserFetchUserData from '../hooks/UseFetchUserData';
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning 𖤓';
+  if (hour < 18) return 'Good Afternoon 𖤓';
+  return 'Good Evening 𖤓';
+};
 
 export default function ProfileView() {
-  const {data}=UserFetchUserData()
-  const GetwellcomeMessage=()=>{
-    let today = new Date();
-    let curHr = today.getHours();
-    if (curHr < 12) {
-      return 'Good Morning 𖤓';
-    } else if (curHr < 18) {
-      return 'Good Afternoon 𖤓';
-    } else {
-      return 'Good Evening 𖤓';
-    }
-  }
+  const theme = useTheme();
+  const { data } = UserFetchUserData();
+
   return (
-    <View className='w-full flex items-center  justify-between flex-row'>
-        <View className='flex item-center justify-center'>
-            <Text className='text-[12px] text-zinc-200 font-semibold mb-1'>{GetwellcomeMessage()}</Text>
-            <Text className='text-[19px] text-zinc-200 font-semibold mb-1'>{data?.data?.username}</Text>
-
-        </View>
-        <Image className='w-[40px] h-[40px] rounded-full' alt='Avatar' src='https://avatar.iran.liara.run/public/44' />
+    <View style={{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 24,
+    }}>
+      <View>
+        <Text style={{
+          color: theme.colors.secondaryText,
+          fontSize: 14,
+          marginBottom: 4,
+        }}>
+          {getGreeting()}
+        </Text>
+        <Text style={{
+          color: theme.colors.text,
+          fontSize: 20,
+          fontWeight: '600',
+        }}>
+          {data?.data?.username}
+        </Text>
+      </View>
       
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        <TouchableOpacity onPress={
+          () => theme.toggleTheme()
+        }>
+          <MaterialCommunityIcons
+            name={theme.isDarkMode ? 'weather-sunny' : 'weather-night'}
+            size={28}
+            color={theme.colors.text}
+          />
+        </TouchableOpacity>
+        <Image
+          source={{ uri: 'https://avatar.iran.liara.run/public/44' }}
+          style={{ width: 48, height: 48, borderRadius: 24 }}
+        />
+      </View>
     </View>
-  )
+  );
 }
-

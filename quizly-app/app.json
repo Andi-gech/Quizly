@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "quizly-app",
@@ -9,7 +10,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.andutii.quizlyapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,6 +34,12 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.159666388412-07hc4npl8a7qlntd5up7n9gqc1ll15su"
         }
       ]
     ],

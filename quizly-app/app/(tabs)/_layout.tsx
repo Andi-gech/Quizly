@@ -4,8 +4,11 @@ import { View, TouchableOpacity } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import React from "react";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function TabLayout() {
+    const theme = useTheme();
+    
   return (
     <Tabs
       initialRouteName="index"
@@ -13,7 +16,8 @@ export default function TabLayout() {
         tabBarHideOnKeyboard: true,
         tabBarBackground: () => (
           <LinearGradient
-            colors={['#0f172a', '#1e293b']}
+          colors={theme.colors.background}
+         
             style={{ height: 60, width: '100%' }}
           />
         ),

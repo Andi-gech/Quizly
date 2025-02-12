@@ -11,6 +11,7 @@ import LoadingPage from '../../components/LoadingPage';
 import Question from '../../components/Question';
 import api from '../../utils/Api';
 import { useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function Starter() {
   const { id } = useLocalSearchParams();
@@ -67,16 +68,18 @@ export default function Starter() {
   setStarted(true);
   }
   };
+  const theme = useTheme();
   if (!started) {
     return (
       <LinearGradient
-        colors={['#0f172a', '#1e293b']}
+      colors={theme.colors.background}
+       
         className="flex-1"
         style={{ height: '100%',paddingTop: 20 }}
       >
         <Header name="Quiz Preparation" showback={true} />
         
-        {isLoading && <LoadingPage />}
+        {isLoading && <LoadingPage quiz={true} />}
 
         <View
           
@@ -95,13 +98,15 @@ export default function Starter() {
             <Text className="text-4xl font-bold text-amber-400 mb-2">
               {data?.data?.title}
             </Text>
-            <Text className="text-slate-300 text-lg text-center mb-8">
+            <Text style={{
+            color: theme.colors.text
+            }} className=" text-lg text-center mb-8">
               Get ready for {data?.data?.questions?.length} questions
             </Text>
             
             <RoundedButton
-              name="Start Challenge"
-              leftIcon={<Ionicons name="play" size={20} color="white" />}
+              label="Start Challenge"
+              icon={mutation.isLoading ? "refresh" : "play"}
               bgcolor="bg-amber-500"
               radius="rounded-xl"
               color="text-white"
@@ -122,9 +127,9 @@ export default function Starter() {
 
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
+      colors={theme.colors.background}
       className="flex-1 pt-[20px]"
-      style={{ height: '100%' }}
+      style={{ height: '100%',paddingTop: 20 }}
     >
       <Header 
         name={`Question ${currentQuestion + 1}/${data?.data?.questions?.length}`} 

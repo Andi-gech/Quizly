@@ -3,11 +3,13 @@ import React from 'react';
 import { MotiView } from 'moti';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import {useTheme} from "../context/ThemeContext"
 
-export default function LoadingPage() {
+export default function LoadingPage( {quiz} ) {
+  const theme = useTheme();
   return (
     <LinearGradient
-      colors={['rgba(15, 23, 42, 0.95)', 'rgba(30, 41, 59, 0.97)']}
+    colors={theme.colors.background}
       style={
         {
          display:"flex",
@@ -57,7 +59,7 @@ export default function LoadingPage() {
           </MotiView>
         </LinearGradient>
       </MotiView>
-
+{quiz ? (
       <MotiView
         from={{ opacity: 0.5, translateY: 10 }}
         animate={{ opacity: 1, translateY: 0 }}
@@ -67,10 +69,33 @@ export default function LoadingPage() {
         <Text className="text-amber-400 text-lg font-semibold">
           Generating Magic...
         </Text>
-        <Text className="text-slate-300 text-center mt-2">
+        <Text style={
+          {
+            color:theme.colors.text
+          }
+        } className=" text-center mt-2">
           Crafting your quiz experience
         </Text>
       </MotiView>
+):(
+      <MotiView
+        from={{ opacity: 0.5, translateY: 10 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ type: 'timing', loop: true, duration: 1200 }}
+        className="mt-8"
+      >
+        <Text className="text-amber-400 text-lg font-semibold">
+          Loading...
+        </Text>
+        <Text style={
+          {
+            color:theme.colors.text
+          }
+        } className=" text-center mt-2">
+          Please wait a moment
+        </Text>
+      </MotiView>
+)}
 
       {/* Floating particles */}
       <MotiView

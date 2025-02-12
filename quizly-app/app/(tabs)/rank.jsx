@@ -6,8 +6,11 @@ import { Ionicons } from '@expo/vector-icons';
 import Header from '../../components/Header';
 import LoadingPage from '../../components/LoadingPage';
 import UseFetchLeaderBoard from '../../hooks/UseFetchLeaderBoard';
+import { StatusBar } from 'expo-status-bar';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function Leaderboard() {
+  const theme = useTheme();
   const { data, isLoading, refetch } = UseFetchLeaderBoard();
   const sortedData = data?.data?.sort((a, b) => b.totalScore - a.totalScore) || [];
 
@@ -23,6 +26,7 @@ export default function Leaderboard() {
 
     return (
       <View
+      key={position}
      
         
         className={`items-center mx-2 ${position === 1 ? 'mb-8' : 'mb-4'}`}
@@ -39,15 +43,21 @@ export default function Leaderboard() {
             color="white"
           />
         </LinearGradient>
-        <View className="bg-slate-800 p-3 rounded-b-2xl w-full items-center shadow-lg">
+        <View style={{
+           backgroundColor: theme.colors.background[1],
+        }} className=" p-3 rounded-b-2xl w-full items-center shadow-lg">
           <Image
             className="w-12 h-12 rounded-full border-2 border-white -mt-8"
             source={{ uri: rank?.avatar || 'https://avatar.iran.liara.run/public/44' }}
           />
-          <Text className="font-bold text-white mt-2" numberOfLines={1}>
+          <Text style={{
+            color: theme.colors.text,
+          }} className="font-bold text-white mt-2" numberOfLines={1}>
             {rank?.user || 'Anonymous'}
           </Text>
-          <Text className="text-amber-400 text-sm">
+          <Text style={{
+            color: theme.colors.text,
+          }} className="text-amber-400 text-sm">
             {rank?.totalScore || 0} pts
           </Text>
         </View>
@@ -57,12 +67,12 @@ export default function Leaderboard() {
 
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b']}
+    colors={theme.colors.background}
       className="flex-1 pt-2"
-      style={{ height: '100%' }}
+      style={{ height: '100%', paddingTop: 20 }}
     >
       <Header name="Leaderboard" showback={false} />
-      
+      <StatusBar style={!theme?.isDarkMode ? "dark" : "light"} />
       {isLoading && <LoadingPage accentColor="#f59e0b" />}
 
       {/* Podium Section */}
@@ -77,8 +87,9 @@ export default function Leaderboard() {
       {/* Leaderboard List */}
       <View
        
-        className="flex-1 bg-slate-800 rounded-t-3xl p-4"
+        className="flex-1   rounded-t-3xl p-4"
         style={{ 
+          backgroundColor: theme.colors.background[0],
           shadowColor: '#f59e0b', 
           shadowOffset: { width: 0, height: -10 }, 
           shadowOpacity: 0.1, 
@@ -98,12 +109,22 @@ export default function Leaderboard() {
           }
           renderItem={({ item, index }) => (
             <View
-            key={item._id}
+            key={index}
+            
              
-              className="flex-row items-center bg-slate-700 p-3 rounded-xl mb-2"
-              style={{ elevation: 2 }}
+              className="flex-row items-center  p-3 rounded-xl mb-2"
+              style={{ elevation: 2 ,
+                backgroundColor: theme.colors.background[1],
+                shadowColor: '#f59e0b', 
+                shadowOffset: { width: 0, height: 10 }, 
+                shadowOpacity: 0.1, 
+                shadowRadius: 20
+              }}
             >
-              <Text className="text-amber-400 font-bold min-w-[40px]">
+              <Text style={{
+                color: theme.colors.text,
+
+              }} className="text-amber-400 font-bold min-w-[40px]">
                 #{index + 1}
               </Text>
               <Image
@@ -111,10 +132,16 @@ export default function Leaderboard() {
                 source={{ uri: item.avatar || 'https://avatar.iran.liara.run/public/44' }}
               />
               <View className="flex-1">
-                <Text className="font-semibold text-white" numberOfLines={1}>
+                <Text  style={{
+                color: theme.colors.text,
+                
+              }}  className="font-semibold text-white" numberOfLines={1}>
                   {item.user}
                 </Text>
-                <Text className="text-gray-400 text-sm">
+                <Text  style={{
+                color: theme.colors.text,
+                
+              }}  className="text-gray-400 text-sm">
                   {item.totalScore} points
                 </Text>
               </View>
@@ -130,7 +157,10 @@ export default function Leaderboard() {
           ListEmptyComponent={
             <View className="items-center justify-center py-8">
               <Ionicons name="sad-outline" size={40} color="#64748b" />
-              <Text className="text-slate-400 mt-4">No leaderboard data available</Text>
+              <Text  style={{
+                color: theme.colors.text,
+                
+              }}  className="text-slate-400 mt-4">No leaderboard data available</Text>
             </View>
           }
         />

@@ -1,9 +1,9 @@
 const Quiz = require('../models/quizModel');
 const User = require('../models/userModel');
 const pdf = require('pdf-parse');
-const officeParser = require('officeparser');
+
 const util = require('util');
-const parseOffice = util.promisify(officeParser.parseOffice);
+const officeParser = require('officeparser');
 const tmp = require('tmp-promise');
 const fs = require('fs').promises;
 const { getQuizFromAI} = require('../services/generativeAIService');
@@ -254,6 +254,7 @@ exports.deleteQuiz = async (req, res) => {
 };
 exports.generateQuiz = async (req, res) => {
   try {
+  
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
@@ -264,7 +265,11 @@ exports.generateQuiz = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const allowedMimeTypes = [/* existing types */];
+    const allowedMimeTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/vnd.ms-powerpoint'
+    ];
     const mimeType = req.file.mimetype;
     if (!allowedMimeTypes.includes(mimeType)) {
       return res.status(400).json({ message: 'Unsupported file type' });
@@ -280,12 +285,15 @@ exports.generateQuiz = async (req, res) => {
     if (mimeType === 'application/pdf') {
       quizData = await getQuizFromAI(fileBuffer, mimeType, numQuestions, studyFocus);
     } else {
-      // Process PowerPoint
+      
       let tempFile;
       try {
         tempFile = await tmp.file({ postfix: mimeType.includes('openxml') ? '.pptx' : '.ppt' });
+     
         await fs.writeFile(tempFile.path, fileBuffer);
-        const extractedText = await parseOffice(tempFile.path);
+      
+        const extractedText = await officeParser.parseOfficeAsync(tempFile.path);
+        console.log('Temp file:', extractedText);
         quizData = await getQuizFromAI(extractedText, null, numQuestions, studyFocus);
       } finally {
         if (tempFile) await tempFile.cleanup();
@@ -306,7 +314,7 @@ exports.generateQuiz = async (req, res) => {
     res.status(201).json(savedQuiz);
 
   } catch (error) {
-    console.error('Quiz generation error:', error);
+
     res.status(500).json({ 
       message: 'Quiz generation failed',
       error: error.message 

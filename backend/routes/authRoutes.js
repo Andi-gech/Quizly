@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+
 const authenticateToken = require('../middleware/authMiddleware');
 
 /**
@@ -54,11 +55,17 @@ router.post('/signup', authController.signup);
  *       401:
  *         description: Unauthorized
  */
+router.post('/signup', authController.signup);
+router.post('/resendVerificationCode', authController.login);
 router.post('/login', authController.login);
+router.post('/google', authController.googleLogin);
+router.post('/verify', authController.verifyEmail);
+router.post('/forgotPassword', authController.forgotPassword);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
 router.get('/me',authenticateToken,authController.getme);
 router.put('/update',authenticateToken,authController.updateMe);
-router.post('/verify',authenticateToken,authController.verifyEmail);
+
 
 
 
