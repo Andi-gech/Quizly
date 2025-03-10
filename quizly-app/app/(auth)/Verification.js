@@ -172,7 +172,7 @@ export default function Verification() {
                 className={`w-12 h-12 rounded-xl text-center text-lg 
                   ${digit ? 'bg-amber-400 text-black' : 'bg-slate-800/50 text-white'} 
                   font-bold border border-slate-700`}
-                keyboardType="numeric"
+                
                 maxLength={1}
                 value={digit}
                 onChangeText={(text) => handleChange(text, index)}

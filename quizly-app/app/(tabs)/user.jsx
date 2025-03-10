@@ -119,7 +119,7 @@ console.log(user?.data)
           >
             <Image
               className="w-32 h-32 rounded-full border-4 border-white"
-              source={{ uri: user?.data.photo||'https://avatar.iran.liara.run/public/44' }}
+              source={{ uri: user?.data?.photo||'https://avatar.iran.liara.run/public/44' }}
             />
           </LinearGradient>
         </View>

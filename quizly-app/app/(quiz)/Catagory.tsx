@@ -10,7 +10,7 @@ import { useTheme } from '@/context/ThemeContext';
 
 export default function Category() {
   const { id, name } = useLocalSearchParams();
-  const datas = { category: id };
+  const datas = { catagory: id };
   const { data, isLoading, isFetching, refetch, error } = UseFetchLiveQuizes(datas);
 
   useEffect(() => {

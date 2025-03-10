@@ -10,7 +10,7 @@ import UseFetchQuiz from '../../hooks/UseFetchQuiz';
 import LoadingPage from '../../components/LoadingPage';
 import Question from '../../components/Question';
 import api from '../../utils/Api';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Starter() {
@@ -25,7 +25,14 @@ export default function Starter() {
   mutation.mutate();
   
   }
-  
+  const [shuffledAnswers, setShuffledAnswers] = useState([]);
+
+useEffect(() => {
+  if (data?.data?.questions[currentQuestion]?.answers) {
+    setShuffledAnswers([...data.data.questions[currentQuestion].answers].sort(() => Math.random() - 0.5));
+  }
+}, [currentQuestion, data]);
+
   const mutation = useMutation(
    
  
@@ -150,7 +157,7 @@ export default function Starter() {
           onclose={handleclose}
           id={data?.data?.questions[currentQuestion]?._id}
           question={data?.data?.questions[currentQuestion]?.questionText}
-          answers={data?.data?.questions[currentQuestion]?.answers}
+          answers={shuffledAnswers}
           onnext={handleNext}
         />
       </View>
