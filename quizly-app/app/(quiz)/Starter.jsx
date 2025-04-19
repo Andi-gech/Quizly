@@ -25,6 +25,7 @@ export default function Starter() {
   mutation.mutate();
   
   }
+  console.log(JSON.stringify(data));
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
 useEffect(() => {
@@ -48,7 +49,7 @@ useEffect(() => {
       ,
     mutationKey: ["quiz", id, "score"],
     onSuccess: (data) => {
-      console.log(data);
+      
       router.push({
         pathname: "/(quiz)/score",
         params: {
@@ -147,7 +148,7 @@ useEffect(() => {
 
       <View
        
-        className="flex-1"
+        className="flex-1 bg-red-500"
       >
         <Question
           AnswerQuestion={(answer, question) => {
@@ -158,6 +159,7 @@ useEffect(() => {
           id={data?.data?.questions[currentQuestion]?._id}
           question={data?.data?.questions[currentQuestion]?.questionText}
           answers={shuffledAnswers}
+          explanation={data?.data?.questions[currentQuestion]?.explanation}
           onnext={handleNext}
         />
       </View>

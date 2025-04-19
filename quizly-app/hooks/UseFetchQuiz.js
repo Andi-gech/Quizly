@@ -1,16 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQuery } from '@tanstack/react-query';
+import api from '../utils/Api';
+import useNetworkStatus from '../hooks/useNetworkStatus';
 
-import api from "../utils/Api";
-
-export default function UseFetchQuiz({id}) {
-  const FetchQuiz = async () => {
-    return await api.get(`/api/quizzes/${id}`);
-  };
+export default function UseFetchQuiz({ id }) {
+  const isConnected = useNetworkStatus();
 
   return useQuery({
-    queryKey: ["Quiz"],
-    queryFn: FetchQuiz,
-    enabled: !!id,
-    refetchOnWindowFocus: false,
+    queryKey: ['quiz', id],
+    queryFn: async () => {
+      const response = await api.get(`/api/quizzes/${id}`);
+      await AsyncStorage.setItem(`quiz-${id}`, JSON.stringify(response.data));
+      return response.data;
+    },
+    enabled: isConnected||!!id,
+    // fallback to AsyncStorage when offline
+    suspense: true,
+    initialData: async () => {
+      const stored = await AsyncStorage.getItem(`quiz-${id}`);
+      return stored ? JSON.parse(stored) : null;
+    }
   });
 }

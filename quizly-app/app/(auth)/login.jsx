@@ -1,11 +1,11 @@
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
+// import {
+//   GoogleSignin,
+//   GoogleSigninButton,
+//   statusCodes,
+// } from '@react-native-google-signin/google-signin';
 import { useRouter } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,14 +21,14 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
 
-  // Configure Google Sign-In
-  GoogleSignin.configure({
-    webClientId: '159666388412-m52o9ge39kddgkr6f0thcgrlv57b873p.apps.googleusercontent.com',
-    iosClientId: '159666388412-07hc4npl8a7qlntd5up7n9gqc1ll15su.apps.googleusercontent.com',
-    scopes: ['profile', 'email'], 
-    offlineAccess: true,
-    forceCodeForRefreshToken: true,
-  });
+  // // Configure Google Sign-In
+  // GoogleSignin.configure({
+  //   webClientId: '159666388412-m52o9ge39kddgkr6f0thcgrlv57b873p.apps.googleusercontent.com',
+  //   iosClientId: '159666388412-07hc4npl8a7qlntd5up7n9gqc1ll15su.apps.googleusercontent.com',
+  //   scopes: ['profile', 'email'], 
+  //   offlineAccess: true,
+  //   forceCodeForRefreshToken: true,
+  // });
 
 
   const loginMutation = useMutation({
@@ -185,14 +185,14 @@ export default function Login() {
         </View>
 
         {/* Google Sign-In Button */}
-        <View className="w-full mt-6">
+        {/* <View className="w-full mt-6">
           <GoogleSigninButton
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
             onPress={handleGoogleSignIn}
             disabled={googleMutation.isLoading}
           />
-        </View>
+        </View> */}
 
         {/* Signup Link */}
         <TouchableOpacity 
