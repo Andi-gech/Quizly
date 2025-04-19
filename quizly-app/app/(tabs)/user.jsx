@@ -1,5 +1,5 @@
-import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, Image, TextInput, TouchableOpacity, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import RoundedButton from '../../components/RoundedButton';
@@ -7,19 +7,22 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UseFetchStats from '../../hooks/UseFetchStats';
 import UseFetchUserData from '../../hooks/UseFetchUserData';
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../utils/Api';
 import LoadingPage from '../../components/LoadingPage';
 import { useTheme } from '../../context/ThemeContext';
+import { MotiView, AnimatePresence } from 'moti';
 
 export default function UserProfile() {
   const router = useRouter();
-  const { data: user,isLoading } = UseFetchUserData();
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
+  const { data: user, isLoading, error: userError } = UseFetchUserData();
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
   const [username, setUsername] = useState('');
-  const { data } = UseFetchStats();
+  const { data, error: statsError } = UseFetchStats();
   const theme = useTheme();
+  const fadeAnim = useState(new Animated.Value(0))[0];
+  const quiryClient =new useQueryClient();
 
   const updateUsername = async ({ username }) => {
     return await api.put('/api/auth/update', { username });
@@ -27,215 +30,300 @@ export default function UserProfile() {
 
   const mutation = useMutation(updateUsername, {
     onSuccess: () => {
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setSuccess('Username updated successfully!');
+      quiryClient.invalidateQueries({
+        queryKey: ['me']
+      });
+      resetMessages();
     },
-    onError: () => {
-      setError(true);
-      setTimeout(() => setError(false), 3000);
+    onError: (error) => {
+      setError(error.response?.data?.message || 'Update failed. Please try again.');
+      resetMessages();
     },
   });
 
-  const handleUpdate = () => mutation.mutate({ username });
+  const resetMessages = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => {
+          setSuccess('');
+          setError('');
+        });
+      }, 3000);
+    });
+  };
+
+  const handleUpdate = () => {
+    if (!username.trim() || username === user?.data?.username) return;
+    mutation.mutate({ username });
+  };
 
   const logout = async () => {
     await AsyncStorage.removeItem('token');
     router.replace('/(auth)/login');
   };
-console.log(user?.data)
+
+  if (isLoading || mutation.isLoading) return <LoadingPage accentColor={theme.colors.accent[0]} />;
+
   return (
     <LinearGradient
-      colors={[  theme.colors.background[1], theme.colors.background[0] ]}
-      className="flex-1 relative"
-      style={{
-        height:"100%",
-       
-      }}
+      colors={[theme.colors.background[1], theme.colors.background[0]]}
+      style={{ flex: 1 }}
     >
+      <AnimatePresence>
+        {/* Error Messages */}
+        {(error || userError || statsError) && (
+          <MotiView
+            from={{ translateY: -100, opacity: 0 }}
+            animate={{ translateY: 0, opacity: 1 }}
+            exit={{ translateY: -100, opacity: 0 }}
+            style={{
+              position: 'absolute',
+              top: 100,
+              left: 20,
+              right: 20,
+              zIndex: 50,
+              backgroundColor: theme.colors.danger[0],
+              padding: 16,
+              borderRadius: theme.metrics.borderRadius.soft,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
+            <Ionicons name="close-circle" size={24} color={theme.colors.contrastText} />
+            <Text style={{ color: theme.colors.contrastText, flex: 1 }}>
+              {error || userError?.message || statsError?.message}
+            </Text>
+          </MotiView>
+        )}
 
-    
+        {/* Success Message */}
         {success && (
-          <View
+          <MotiView
             from={{ translateY: -100, opacity: 0 }}
             animate={{ translateY: 0, opacity: 1 }}
             exit={{ translateY: -100, opacity: 0 }}
-            className="absolute top-14 left-5 right-5 z-50 bg-emerald-500/90 p-4 rounded-xl flex-row items-center space-x-2"
+            style={{
+              position: 'absolute',
+              top: 60,
+              left: 20,
+              right: 20,
+              zIndex: 50,
+              backgroundColor: theme.colors.success[0],
+              padding: 16,
+              borderRadius: theme.metrics.borderRadius.soft,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8
+            }}
           >
-            <Ionicons name="checkmark-circle" size={24} color="white" />
-            <Text className="text-white font-medium">Username updated successfully!</Text>
-          </View>
+            <Ionicons name="checkmark-circle" size={24} color={theme.colors.contrastText} />
+            <Text style={{ color: theme.colors.contrastText, flex: 1 }}>{success}</Text>
+          </MotiView>
         )}
-        
-        {error && (
-          <View
-            from={{ translateY: -100, opacity: 0 }}
-            animate={{ translateY: 0, opacity: 1 }}
-            exit={{ translateY: -100, opacity: 0 }}
-            className="absolute top-14 left-5 right-5 z-50 bg-red-500/90 p-4 rounded-xl flex-row items-center space-x-2"
-          >
-            <Ionicons name="close-circle" size={24} color="white" />
-            <Text className="text-white font-medium">Update failed. Please try again.</Text>
-          </View>
-        )}
-     
+      </AnimatePresence>
 
       {/* Header */}
-      <View
+      <MotiView
         from={{ opacity: 0, translateY: -20 }}
         animate={{ opacity: 1, translateY: 0 }}
-        className="pt-14 px-6 flex-row justify-end"
+        style={{ paddingTop: 60, paddingHorizontal: 24, flexDirection: 'row', justifyContent: 'flex-end' }}
       >
         <TouchableOpacity 
           onPress={logout}
-          className="bg-red-500/20 p-2 rounded-lg flex-row items-center"
+          style={{
+            backgroundColor: theme.colors.danger[0] + '20',
+            padding: 8,
+            borderRadius: theme.metrics.borderRadius.soft,
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}
         >
-          <Ionicons name="log-out" size={20} color="#ef4444" />
-          <Text className="text-red-400 ml-2 font-medium">Logout</Text>
+          <Ionicons name="log-out" size={20} color={theme.colors.danger[0]} />
+          <Text style={{ color: theme.colors.danger[0], marginLeft: 8 }}>Logout</Text>
         </TouchableOpacity>
-      </View>
+      </MotiView>
 
       {/* Profile Content */}
-      <View
+      <MotiView
         from={{ opacity: 0, translateY: 50 }}
-        
         animate={{ opacity: 1, translateY: 0 }}
-        className="flex-1 relative  rounded-t-[40px] mt-20 p-6"
-        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20, backgroundColor: theme.colors.background[0] }}
+        style={{
+          flex: 1,
+          marginTop: 80,
+          padding: 24,
+          borderTopLeftRadius: 40,
+          borderTopRightRadius: 40,
+          backgroundColor: theme.colors.background[0],
+          ...theme.effects.shadow
+        }}
       >
-       
-        <View
-          className="absolute -top-[60px]  w-screen flex items-center  justify-center"
-         
-          
+        {/* Profile Image */}
+        <MotiView
+          style={{
+            position: 'absolute',
+            top: -80,
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
         >
           <LinearGradient
-            colors={['#f59e0b', '#fbbf24']}
-            className="p-1 rounded-full"
+            colors={theme.colors.accent}
             style={{
-              padding: 2,
+              padding: 4,
               borderRadius: 100,
-              width: 120,
+              ...theme.effects.shadow
             }}
           >
             <Image
-              className="w-32 h-32 rounded-full border-4 border-white"
-              source={{ uri: user?.data?.photo||'https://avatar.iran.liara.run/public/44' }}
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: 60,
+                borderWidth: 4,
+                borderColor: theme.colors.contrastText
+              }}
+              source={{ uri: user?.data?.photo || 'https://avatar.iran.liara.run/public/44' }}
             />
           </LinearGradient>
-        </View>
+        </MotiView>
 
-     
-        <View className="flex-row mt-[50px] justify-between mb-8">
+        {/* Stats */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 }}>
           <StatCard
             icon="gift"
-            value={`${data?.data?.totalPoints} pts`}
+            value={`${data?.data?.totalPoints || 0} pts`}
             label="Points"
             theme={theme}
-            color="#f59e0b"
+            color={theme.colors.accent[0]}
           />
           <StatCard
             icon="file-tray"
-            value={`${data?.data?.totalQuizzesTaken}`}
+            value={`${data?.data?.totalQuizzesTaken || 0}`}
             label="Quizzes"
             theme={theme}
-            color="#3b82f6"
+            color={theme.colors.info[0]}
           />
           <StatCard
             icon="bulb"
-            value={`${data?.data?.totalQuestionsDone}`}
+            value={`${data?.data?.totalQuestionsDone || 0}`}
             label="Questions"
             theme={theme}
-            color="#10b981"
+            color={theme.colors.success[0]}
           />
         </View>
 
         {/* Form Fields */}
-        <View className="space-y-6">
+        <View style={{ gap: 24 }}>
           <FormField
             label="Username"
             theme={theme}
             icon="person"
             value={username}
-            placeholder={user?.data?.username}
+            placeholder={user?.data?.username || 'Loading...'}
             onChangeText={setUsername}
+            editable={!mutation.isLoading}
           />
           <FormField
             label="Email"
             theme={theme}
-            
             icon="mail"
-            value={user?.data?.email}
+            value={user?.data?.email || 'Loading...'}
             editable={false}
           />
         </View>
 
         {/* Update Button */}
-        <View
-          className="mt-8"
+        <MotiView
           from={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
+          style={{ marginTop: 32 }}
         >
           <RoundedButton
-           label={mutation.isLoading ? "Updating..." : "Update Profile"}
+            label={mutation.isLoading ? "Updating..." : "Update Profile"}
             onPress={handleUpdate}
-            bgcolor="bg-amber-400"
-            color="text-black text-lg font-bold"
-            radius="rounded-xl"
-            icon={mutation.isLoading ? "refresh" : "file"}
-            disabled={mutation.isLoading}
+            gradient={theme.colors.accent}
+            textColor={theme.colors.contrastText}
+            disabled={mutation.isLoading || !username.trim() || username === user?.data?.username}
           />
-        </View>
-      </View>
-
-      {mutation.isLoading||isLoading && <LoadingPage accentColor="#f59e0b" />}
+        </MotiView>
+      </MotiView>
     </LinearGradient>
   );
 }
 
-const StatCard = ({ icon, value, label, color,theme }) => (
-  <View
-  
-    className=" p-4 rounded-xl items-center flex-1 mx-1"
-    style={{ shadowColor: color, shadowOpacity: 0.1, shadowRadius: 10,backgroundColor: theme.colors.card[0] }}
+const StatCard = ({ icon, value, label, color, theme }) => (
+  <MotiView
     from={{ scale: 0.9 }}
     animate={{ scale: 1 }}
+    style={{
+      flex: 1,
+      marginHorizontal: 4,
+      padding: 16,
+      borderRadius: theme.metrics.borderRadius.soft,
+      backgroundColor: theme.colors.card[0],
+      alignItems: 'center',
+      ...theme.effects.shadow
+    }}
   >
-    <View className="bg-black/5 p-2 rounded-full mb-2">
+    <View style={{
+      backgroundColor: color + '20',
+      padding: 8,
+      borderRadius: theme.metrics.borderRadius.pill,
+      marginBottom: 8
+    }}>
       <Ionicons name={icon} size={20} color={color} />
     </View>
     <Text style={{
       color: color,
-    }} className="text-black dark:text-white font-bold text-lg">{value}</Text>
-    <Text style={
-      {
-        color:theme.colors.text
-      }
-    } className=" text-xs">{label}</Text>
-  </View>
+      fontSize: 18,
+      fontWeight: theme.typography.fontWeights.bold,
+      marginBottom: 4
+    }}>{value}</Text>
+    <Text style={{
+      color: theme.colors.secondaryText,
+      fontSize: 12
+    }}>{label}</Text>
+  </MotiView>
 );
 
-const FormField = ({ label, icon, theme,...props }) => (
-  <View
-    className="space-y-2 mt-3"
+const FormField = ({ label, icon, theme, ...props }) => (
+  <MotiView
     from={{ opacity: 0, translateX: -10 }}
     animate={{ opacity: 1, translateX: 0 }}
+    style={{ gap: 8 }}
   >
-    <View style={
-      {
-        backgroundColor:theme.colors.card[0],
-        shadowColor:theme.colors.text,
-        shadowOpacity:0.1,
-        shadowRadius:10
-      }
-    } className="flex-row items-center  rounded-lg px-4 h-14">
-      <Ionicons name={icon} size={20} color="#64748b" />
+    <View style={{
+      backgroundColor: theme.colors.card[0],
+      borderRadius: theme.metrics.borderRadius.soft,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      height: 56,
+      ...theme.effects.shadow
+    }}>
+      <Ionicons name={icon} size={20} color={theme.colors.secondaryText} />
       <TextInput
-        className="flex-1 ml-3 text-zinc-800 dark:text-white text-base"
-        placeholderTextColor="#94a3b8"
-        style={{ color: theme.colors.text }}
-
+        style={{
+          flex: 1,
+          marginLeft: 12,
+          color: theme.colors.text,
+          fontSize: 16,
+          fontWeight: theme.typography.fontWeights.medium
+        }}
+        placeholderTextColor={theme.colors.secondaryText}
         {...props}
       />
     </View>
-  </View>
+  </MotiView>
 );

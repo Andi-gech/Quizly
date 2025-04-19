@@ -10,6 +10,8 @@ import LoadingPage from '../../components/LoadingPage';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { StatusBar } from 'expo-status-bar';
+import { useTheme } from '../../context/ThemeContext';
+import { AnimatePresence, MotiView } from 'moti';
 
 export default function Signup() {
   const router = useRouter();
@@ -42,146 +44,212 @@ export default function Signup() {
     },
     mutationKey: ['Register'],
   });
-
+const theme=useTheme();
   return (
-    <LinearGradient
-      colors={['#0f172a', '#1e293b']}
-      className="flex-1"
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1,
-        width: "100%",
-      }}
+<LinearGradient
+  colors={theme.colors.background}
+  style={{ flex: 1, justifyContent: 'center' }}
+>
+  <StatusBar style={theme.isDarkMode ? "light" : "dark"} />
+  <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    style={{ flex: 1, width: '100%' }}
+  >
+    <MotiView
+      from={{ opacity: 0, translateY: 50 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: 'timing', duration: 500 }}
+      style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}
     >
-      <StatusBar style='light' />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-        className="flex-1"
-        style={{
-          flex: 1,
-          width: '100%',
-        }}
+      {/* Logo Header */}
+      <MotiView 
+        from={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring' }}
+        style={{ alignItems: 'center', marginBottom: 40 }}
       >
-        <View
-          from={{ opacity: 0, translateY: 20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          className="w-full px-6 items-center justify-center flex-1"
+        <LinearGradient
+          colors={theme.colors.accent}
           style={{
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingInline: 24,
-            flex: 1,
+            padding: 16,
+            borderRadius: theme.metrics.borderRadius.medium,
+            marginBottom: 16
           }}
         >
-          {/* Logo Header */}
-          <View className="flex-row items-center mb-12">
-            <MaterialCommunityIcons 
-              name="brain" 
-              size={64} 
-              color="#f59e0b" 
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-amber-400 text-5xl font-bold">QUIZLY</Text>
-          </View>
+          <MaterialCommunityIcons 
+            name="brain" 
+            size={52} 
+            color={theme.colors.contrastText} 
+          />
+        </LinearGradient>
+        <Text style={{
+          color: theme.colors.accent[0],
+          fontSize: 42,
+          fontWeight: '900',
+          letterSpacing: -2,
+          textShadowColor: theme.colors.accent[0] + '50',
+          textShadowOffset: { width: 0, height: 0 },
+          textShadowRadius: 20
+        }}>QUIZLY</Text>
+      </MotiView>
 
-          {/* Error Message */}
-       
-            {error && (
-              <View
-                from={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="w-full mb-4 bg-amber-900/30 p-3 rounded-lg flex-row items-center"
-              >
-                <MaterialCommunityIcons 
-                  name="alert-circle" 
+      {/* Error Message */}
+      <AnimatePresence>
+        {error && (
+          <MotiView
+            from={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            style={{ marginBottom: 24 }}
+          >
+            <LinearGradient
+              colors={theme.colors.danger}
+              style={{
+                padding: 16,
+                borderRadius: theme.metrics.borderRadius.soft,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+            >
+              <MaterialCommunityIcons 
+                name="alert-circle" 
+                size={20} 
+                color={theme.colors.contrastText} 
+              />
+              <Text style={{
+                color: theme.colors.contrastText,
+                marginLeft: 8,
+                flex: 1
+              }}>{error}</Text>
+            </LinearGradient>
+          </MotiView>
+        )}
+      </AnimatePresence>
+
+      {/* Input Fields */}
+      <View style={{ gap: 24 }}>
+        {['username', 'email', 'password'].map((type, index) => (
+          <MotiView
+            key={type}
+            from={{ opacity: 0, translateX: -20 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            transition={{ delay: index * 100 }}
+          >
+            <LinearGradient
+              colors={theme.colors.card}
+              style={{
+                borderRadius: theme.metrics.borderRadius.soft,
+                padding: 4,
+                ...theme.effects.shadow
+              }}
+            >
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 16,
+                backgroundColor: theme.colors.card[0],
+                borderRadius: theme.metrics.borderRadius.soft - 2
+              }}>
+                <Ionicons 
+                  name={
+                    type === 'email' ? 'mail-outline' :
+                    type === 'password' ? 'lock-closed-outline' : 'person-outline'
+                  } 
                   size={20} 
-                  color="#f59e0b" 
+                  color={theme.colors.secondaryText} 
                 />
-                <Text className="text-amber-400 ml-2 flex-1">{error}</Text>
+                <TextInput
+                  placeholder={
+                    type === 'email' ? 'Email' :
+                    type === 'password' ? 'Password' : 'Username'
+                  }
+                  value={type === 'email' ? email : type === 'password' ? password : username}
+                  onChangeText={text => {
+                    if(type === 'email') setEmail(text);
+                    if(type === 'password') setPassword(text);
+                    if(type === 'username') setUsername(text);
+                  }}
+                  placeholderTextColor={theme.colors.secondaryText}
+                  style={{
+                    flex: 1,
+                    color: theme.colors.text,
+                    fontSize: 16,
+                    marginLeft: 12,
+                    fontWeight: '500'
+                  }}
+                  secureTextEntry={type === 'password'}
+                  autoCapitalize="none"
+                  keyboardType={type === 'email' ? 'email-address' : 'default'}
+                />
               </View>
-            )}
-        
+              
+            </LinearGradient>
+          </MotiView>
+        ))}
+      </View>
 
-          {/* Input Fields */}
-          <View className=" w-full space-y-6 ">
-            <View className="bg-slate-800/50 mt-5 rounded-xl p-3 flex-row items-center">
-              <Ionicons name="person-outline" size={20} color="#64748b" />
-              <TextInput
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-                placeholderTextColor="#64748b"
-                className="flex-1  text-white text-base ml-3"
-                autoCapitalize="none"
-              />
-            </View>
+      {/* Signup Button */}
+      <MotiView
+        from={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        style={{ marginTop: 32 }}
+      >
+        <RoundedButton
+          label={mutation.isLoading ? "Creating Account..." : "Register"}
+          onPress={() => mutation.mutate({ username, email, password })}
+          gradient={theme.colors.accent}
+          textColor={theme.colors.contrastText}
+          icon={mutation.isLoading ? "loading" : "account-plus"}
+          style={{
+            height: 54,
+            ...theme.effects.shadow
+          }}
+        />
+      </MotiView>
 
-            <View className="bg-slate-800/50 mt-5 rounded-xl p-3 flex-row items-center">
-              <Ionicons name="mail-outline" size={20} color="#64748b" />
-              <TextInput
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                placeholderTextColor="#64748b"
-                className="flex-1 text-white text-base ml-3"
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-            </View>
-
-            <View className="bg-slate-800/50 mt-5 rounded-xl p-3 flex-row items-center">
-              <Ionicons name="lock-closed-outline" size={20} color="#64748b" />
-              <TextInput
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                placeholderTextColor="#64748b"
-                className="flex-1 text-white text-base ml-3"
-                secureTextEntry
-              />
-            </View>
-          </View>
-
-          {/* Signup Button */}
-          <View
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ delay: 200 }}
-            className="w-full mt-8"
+      {/* Login Link */}
+      <MotiView
+        from={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        style={{ alignItems: 'center', marginTop: 24 }}
+      >
+        <TouchableOpacity 
+          onPress={() => router.push('/(auth)/login')}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+          activeOpacity={0.7}
+        >
+          <Text style={{
+            color: theme.colors.secondaryText,
+            marginRight: 4
+          }}>Already have an account?</Text>
+          <LinearGradient
+            colors={theme.colors.accent}
+            style={{
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 20,
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
           >
-            <RoundedButton
-              label="Register"
-              onPress={() => mutation.mutate({ username, email, password })}
-              bgcolor="bg-amber-400"
-              color="text-black font-bold text-lg"
-              radius="rounded-xl"
-              icon="account-plus"
-              loading={mutation.isLoading}
-            />
-          </View>
-
-          {/* Login Link */}
-          <TouchableOpacity 
-            onPress={() => router.push('/(auth)/login')}
-            className="flex-row items-center p-6 mb-8"
-          >
-            <Text className="text-slate-400">Already have an account? </Text>
-            <Text className="text-amber-400 font-semibold">Login</Text>
+            <Text style={{
+              color: theme.colors.contrastText,
+              fontWeight: '600'
+            }}>Login</Text>
             <MaterialCommunityIcons 
               name="arrow-right" 
               size={16} 
-              color="#f59e0b" 
-              style={{ marginLeft: 4 }}
+              color={theme.colors.contrastText} 
+              style={{ marginLeft: 6 }}
             />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+          </LinearGradient>
+        </TouchableOpacity>
+      </MotiView>
+    </MotiView>
 
-      {mutation.isLoading && <LoadingPage />}
-    </LinearGradient>
+    {mutation.isLoading && <LoadingPage />}
+  </KeyboardAvoidingView>
+</LinearGradient>
   );
 }

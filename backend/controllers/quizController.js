@@ -151,14 +151,14 @@ exports.getAllQuizzes = async (req, res) => {
   try {
     const { catagory, searchTitle = '', sortByHistory = false } = req.query;
 
-    let query = {};
+    let query = { private: false };
     let sort = {};
 
     if (catagory) {
       query.Catagory = catagory; 
     }
 
-
+console.log(catagory,"catagory")
     if (searchTitle) {
       query.title = { $regex: searchTitle, $options: 'i' }; 
     }
@@ -214,6 +214,16 @@ exports.getQuizById = async (req, res) => {
   }
 };
 
+exports.getQuizzesByCatagory = async (req, res) => {
+  try {
+    
+    const quizzes = await Quiz.find({ Catagory: req.params.catagoryId });
+    res.status(200).json(quizzes);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching quizzes', error: error.message });
+  }
+};
+
 
 exports.updateQuiz = async (req, res) => {
   try {
@@ -260,7 +270,8 @@ exports.generateQuiz = async (req, res) => {
     }
 
     // Validate input
-    const { title, Catagory, questionCount, focusArea } = req.body;
+    const { title, Catagory, questionCount, focusArea,private } = req.body;
+    console.log(req.body)
     if (!title || !Catagory) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -308,13 +319,14 @@ exports.generateQuiz = async (req, res) => {
       focusArea: studyFocus,
       questions: quizData,
       createdBy: req.user.id,
+     private: private === 'true'? true : false
     });
 
     const savedQuiz = await newQuiz.save();
     res.status(201).json(savedQuiz);
 
   } catch (error) {
-
+console.log(error)
     res.status(500).json({ 
       message: 'Quiz generation failed',
       error: error.message 

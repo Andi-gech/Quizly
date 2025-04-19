@@ -1,6 +1,5 @@
 import { View, Text, FlatList, Image, RefreshControl } from 'react-native';
 import React from 'react';
-
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../../components/Header';
@@ -18,46 +17,72 @@ export default function Leaderboard() {
 
   const renderPodium = (position) => {
     const rank = getRank(position);
-    const colors = {
-      1: ['#f59e0b', '#fbbf24'],
-      2: ['#3b82f6', '#6366f1'],
-      3: ['#1e293b', '#0f172a']
+    const podiumColors = {
+      1: theme.colors.highlight,
+      2: theme.colors.info,
+      3: theme.colors.warning
     };
 
     return (
-      <View
-      key={position}
-     
-        
-        className={`items-center mx-2 ${position === 1 ? 'mb-8' : 'mb-4'}`}
-      >
+      <View key={position} style={{
+        alignItems: 'center',
+        marginHorizontal: theme.metrics.spacing.dense,
+        marginBottom: position === 1 
+          ? theme.metrics.spacing.comfortable 
+          : theme.metrics.spacing.dense
+      }}>
         <LinearGradient
-          colors={colors[position]}
-          className={`w-24 h-${position === 1 ? '32' : '24'} rounded-t-2xl items-center justify-center`}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          colors={podiumColors[position]}
+          style={{
+            width: 96,
+            height: position === 1 ? 128 : 96,
+            borderTopLeftRadius: theme.metrics.borderRadius.medium,
+            borderTopRightRadius: theme.metrics.borderRadius.medium,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...theme.effects.shadow
+          }}
+          start={theme.isDarkMode ? { x: 0, y: 0 } : { x: 1, y: 0 }}
+          end={theme.isDarkMode ? { x: 1, y: 1 } : { x: 0, y: 1 }}
         >
           <Ionicons 
             name={position === 1 ? 'trophy' : position === 2 ? 'medal' : 'ribbon'}
-            size={40}
-            color="white"
+            size={theme.metrics.iconSize.large}
+            color={"#FFD700"}
           />
         </LinearGradient>
         <View style={{
-           backgroundColor: theme.colors.background[1],
-        }} className=" p-3 rounded-b-2xl w-full items-center shadow-lg">
+          backgroundColor: theme.colors.card[0],
+          padding: theme.metrics.spacing.dense,
+          borderRadius: theme.metrics.borderRadius.medium,
+          width: '100%',
+          alignItems: 'center',
+          ...theme.effects.shadow
+        }}>
           <Image
-            className="w-12 h-12 rounded-full border-2 border-white -mt-8"
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: theme.metrics.borderRadius.pill,
+              borderWidth: 2,
+              borderColor: theme.colors.contrastText,
+              marginTop: -theme.metrics.spacing.comfortable
+            }}
             source={{ uri: rank?.avatar || 'https://avatar.iran.liara.run/public/44' }}
           />
           <Text style={{
-            color: theme.colors.text,
-          }} className="font-bold text-white mt-2" numberOfLines={1}>
+            color: theme.colors.primaryText,
+            fontWeight: theme.typography.fontWeights.bold,
+            marginTop: theme.metrics.spacing.dense,
+            letterSpacing: theme.typography.letterSpacing.tight
+          }} numberOfLines={1}>
             {rank?.user || 'Anonymous'}
           </Text>
           <Text style={{
-            color: theme.colors.text,
-          }} className="text-amber-400 text-sm">
+            color: theme.colors.secondaryText,
+            fontSize: 14,
+            fontWeight: theme.typography.fontWeights.medium
+          }}>
             {rank?.totalScore || 0} pts
           </Text>
         </View>
@@ -67,17 +92,20 @@ export default function Leaderboard() {
 
   return (
     <LinearGradient
-    colors={theme.colors.background}
-      className="flex-1 pt-2"
-      style={{ height: '100%', paddingTop: 20 }}
+      colors={theme.colors.background}
+      style={{ flex: 1, paddingTop: theme.metrics.spacing.comfortable }}
     >
       <Header name="Leaderboard" showback={false} />
-      <StatusBar style={!theme?.isDarkMode ? "dark" : "light"} />
-      {isLoading && <LoadingPage accentColor="#f59e0b" />}
+      <StatusBar style={theme.isDarkMode ? "light" : "dark"} />
+      {isLoading && <LoadingPage accentColor={theme.colors.accent} />}
 
       {/* Podium Section */}
-      <View className="h-[40%] justify-end">
-        <View className="flex-row justify-center items-end">
+      <View style={{ height: '40%', justifyContent: 'flex-end' }}>
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'flex-end'
+        }}>
           {renderPodium(2)}
           {renderPodium(1)}
           {renderPodium(3)}
@@ -85,82 +113,97 @@ export default function Leaderboard() {
       </View>
 
       {/* Leaderboard List */}
-      <View
-       
-        className="flex-1   rounded-t-3xl p-4"
-        style={{ 
-          backgroundColor: theme.colors.background[0],
-          shadowColor: '#f59e0b', 
-          shadowOffset: { width: 0, height: -10 }, 
-          shadowOpacity: 0.1, 
-          shadowRadius: 20 
-        }}
-      >
+      <View style={{
+        flex: 1,
+        borderTopLeftRadius: theme.metrics.borderRadius.large,
+        borderTopRightRadius: theme.metrics.borderRadius.large,
+        padding: theme.metrics.spacing.comfortable,
+        backgroundColor: theme.colors.card[0],
+        ...theme.effects.shadow
+      }}>
         <FlatList
           data={sortedData}
           keyExtractor={(item) => item?._id}
-         
           refreshControl={
             <RefreshControl
               refreshing={isLoading}
               onRefresh={refetch}
-              tintColor="#f59e0b"
+              colors={theme.colors.accent}
+              progressBackgroundColor={theme.colors.card[0]}
             />
           }
           renderItem={({ item, index }) => (
-            <View
-            key={index}
-            
-             
-              className="flex-row items-center  p-3 rounded-xl mb-2"
-              style={{ elevation: 2 ,
-                backgroundColor: theme.colors.background[1],
-                shadowColor: '#f59e0b', 
-                shadowOffset: { width: 0, height: 10 }, 
-                shadowOpacity: 0.1, 
-                shadowRadius: 20
-              }}
-            >
+            <View key={
+              item?._id || index
+            } style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: theme.metrics.spacing.dense,
+              borderRadius: theme.metrics.borderRadius.soft,
+              marginBottom: theme.metrics.spacing.dense,
+              backgroundColor: theme.colors.background[1],
+              ...theme.effects.shadow
+            }}>
               <Text style={{
-                color: theme.colors.text,
-
-              }} className="text-amber-400 font-bold min-w-[40px]">
+                color: theme.colors.primaryText,
+                fontWeight: theme.typography.fontWeights.bold,
+                minWidth: 40
+              }}>
                 #{index + 1}
               </Text>
               <Image
-                className="w-10 h-10 rounded-full mr-3 border border-amber-400"
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: theme.metrics.borderRadius.pill,
+                  borderWidth: 1,
+                  borderColor: theme.colors.accent,
+                  marginRight: theme.metrics.spacing.dense
+                }}
                 source={{ uri: item.avatar || 'https://avatar.iran.liara.run/public/44' }}
               />
-              <View className="flex-1">
-                <Text  style={{
-                color: theme.colors.text,
-                
-              }}  className="font-semibold text-white" numberOfLines={1}>
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  color: theme.colors.primaryText,
+                  fontWeight: theme.typography.fontWeights.semiBold,
+                  letterSpacing: theme.typography.letterSpacing.tight
+                }} numberOfLines={1}>
                   {item.user}
                 </Text>
-                <Text  style={{
-                color: theme.colors.text,
-                
-              }}  className="text-gray-400 text-sm">
+                <Text style={{
+                  color: theme.colors.secondaryText,
+                  fontSize: 14
+                }}>
                   {item.totalScore} points
                 </Text>
               </View>
               {index < 3 && (
                 <Ionicons
                   name={index === 0 ? 'trophy' : index === 1 ? 'medal' : 'ribbon'}
-                  size={24}
-                  color="#f59e0b"
+                  size={theme.metrics.iconSize.medium}
+                  color={"#FFD700"}
                 />
               )}
             </View>
           )}
           ListEmptyComponent={
-            <View className="items-center justify-center py-8">
-              <Ionicons name="sad-outline" size={40} color="#64748b" />
-              <Text  style={{
-                color: theme.colors.text,
-                
-              }}  className="text-slate-400 mt-4">No leaderboard data available</Text>
+            <View style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: theme.metrics.spacing.expansive
+            }}>
+              <Ionicons 
+                name="sad-outline" 
+                size={theme.metrics.iconSize.large} 
+                color={theme.colors.secondaryText} 
+              />
+              <Text style={{
+                color: theme.colors.secondaryText,
+                marginTop: theme.metrics.spacing.dense,
+                fontWeight: theme.typography.fontWeights.medium
+              }}>
+                No leaderboard data available
+              </Text>
             </View>
           }
         />

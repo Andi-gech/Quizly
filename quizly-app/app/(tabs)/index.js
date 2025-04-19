@@ -2,167 +2,198 @@ import { View, Text, FlatList, RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from "expo-status-bar";
+import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../../context/ThemeContext";
 import RoundedButton from "../../components/RoundedButton";
-import QuizProgress from "../../components/QuizProgress";
 import ProfileView from "../../components/ProfileView";
 import UseFetchMyQuiz from "../../hooks/UseFetchMyQuiz";
-import LoadingPage from "../../components/LoadingPage";
 import LiveQuizCard from "../../components/LiveQuizCard";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function HomeScreen() {
   const theme = useTheme();
   const { data, isLoading, refetch } = UseFetchMyQuiz();
   const router = useRouter();
 
-  const NavigateToQuizes = () => router.push("/search");
-console.log(data?.data)
+  const navigateToQuizzes = () => router.push("/search");
+
   return (
     <LinearGradient
       colors={theme.colors.background}
       style={{ 
         flex: 1,
-        paddingTop: 50,
+        paddingTop: theme.metrics.spacing.comfortable,
       }}>
-      <StatusBar style={!theme?.isDarkMode ? "dark" : "light"} />
+      <StatusBar style={theme.isDarkMode ? "light" : "dark"} />
       
-      <View style={{ paddingHorizontal: 24 }}>
+      {/* Header Section */}
+      <View style={{ 
+        paddingHorizontal: theme.metrics.spacing.comfortable, 
+        marginBottom: theme.metrics.spacing.dense 
+      }}>
         <ProfileView />
-        
-        {data?.data[0] && (
-          <QuizProgress 
-            addInfo="Recent Quiz"
-            data={data?.data[0]}
-            name={data?.data[0].title}
-            point={data?.data[0].point}
-          />
-        )}
       </View>
 
-      <LinearGradient
-        colors={theme.colors.card}
-        style={{
-          marginInline: 24,
-          padding: 20,
-          borderRadius: 20,
-          shadowColor: theme?.colors.text,
-          shadowOpacity: 0.1,
-          shadowRadius: 10,
-        }}
-      >
-        <View style={{ gap: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <LinearGradient
-              colors={theme.colors.accent}
-              style={{ borderRadius: 8, padding: 4,
-              shadowColor: theme?.colors.text,
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-               }}
-            >
-              <MaterialCommunityIcons 
-                name="rocket-launch" 
-                size={28} 
-                color="white" 
+      {/* Main Content */}
+      <View style={{ flex: 1 }}>
+        {/* Welcome Card */}
+        <View style={{ 
+          paddingHorizontal: theme.metrics.spacing.comfortable, 
+          marginBottom: theme.metrics.spacing.comfortable 
+        }}>
+          <LinearGradient
+            colors={theme.colors.card}
+            style={{
+              padding: theme.metrics.spacing.comfortable,
+              borderRadius: theme.metrics.borderRadius.medium,
+              shadowColor: theme.colors.text,
+              shadowOpacity: 0.05,
+              shadowRadius: 12,
+              shadowOffset: { width: 0, height: 4 },
+            }}
+          >
+            <View style={{ gap: theme.metrics.spacing.dense }}>
+              <View style={{ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                gap: theme.metrics.spacing.dense 
+              }}>
+                <LinearGradient
+                  colors={theme.colors.accent}
+                  style={{ 
+                    borderRadius: theme.metrics.borderRadius.soft,
+                    padding: theme.metrics.spacing.dense,
+                    ...theme.effects.shadow
+                  }}
+                >
+                  <MaterialCommunityIcons 
+                    name="brain" 
+                    size={theme.metrics.iconSize.large} 
+                    color={theme.colors.contrastText} 
+                  />
+                </LinearGradient>
+                <View style={{ flex: 1 }}>
+                  <Text style={{
+                    fontSize: 24,
+                    fontWeight: theme.typography.fontWeights.bold,
+                    color: theme.colors.primaryText,
+                    marginBottom: theme.metrics.spacing.dense/2,
+                    letterSpacing: theme.typography.letterSpacing.tight
+                  }}>
+                    Knowledge Awaits!
+                  </Text>
+                  <Text style={{
+                    fontSize: 16,
+                    color: theme.colors.secondaryText,
+                    lineHeight: 24,
+                    fontWeight: theme.typography.fontWeights.regular,
+                    letterSpacing: theme.typography.letterSpacing.normal
+                  }}>
+                    Ready to challenge yourself? Explore our curated collection of quizzes.
+                  </Text>
+                </View>
+              </View>
+              
+              <RoundedButton
+                label="Browse Quizzes"
+                icon="compass-outline"
+                onPress={navigateToQuizzes}
+                gradient={theme.colors.accent}
+                style={{ 
+                 
+                  ...theme.effects.shadow
+                }}
               />
-            </LinearGradient>
+            </View>
+          </LinearGradient>
+        </View>
+
+        {/* Activities Section */}
+        <View style={{ flex: 1 }}>
+          <View style={{ 
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: theme.metrics.spacing.comfortable,
+            marginBottom: theme.metrics.spacing.dense
+          }}>
             <Text style={{
-              fontSize: 22,
-              fontWeight: '700',
-              background: theme.colors.textGradient,
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-             color: "orange",
+              fontSize: 20,
+              fontWeight: theme.typography.fontWeights.bold,
+              color: theme.colors.text,
+              letterSpacing: theme.typography.letterSpacing.tight
             }}>
-              Welcome to Quizly
+              Recent Activities
+            </Text>
+            <Text style={{
+              fontSize: 14,
+              color: theme.colors.secondaryText,
+              fontWeight: theme.typography.fontWeights.medium
+            }}>
+              {data?.data?.length || 0} available
             </Text>
           </View>
           
-          <Text style={{
-            fontSize: 16,
-            color: theme?.colors.secondaryText,
-            lineHeight: 24,
-          }}>
-            Discover new challenges and expand your knowledge
-          </Text>
-          
-          <RoundedButton
-            label="Explore Quizzes"
-            icon="arrow-right"
-            onPress={NavigateToQuizes}
-            gradient={theme.colors.accent}
+          <FlatList
+            data={data?.data}
+            keyExtractor={(item) => item._id}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ 
+              paddingHorizontal: theme.metrics.spacing.comfortable 
+            }}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={refetch}
+                colors={theme.colors.accent}
+                progressBackgroundColor={theme.colors.card[0]}
+              />
+            }
+            renderItem={({ item }) => (
+              <LiveQuizCard 
+                data={item} 
+                style={{ 
+                  marginBottom: theme.metrics.spacing.dense,
+                  borderRadius: theme.metrics.borderRadius.soft,
+                  padding: theme.metrics.spacing.dense,
+                  backgroundColor: theme.colors.card[0],
+                  ...theme.effects.shadow
+                }}
+              />
+            )}
+            ListEmptyComponent={
+              <View style={{ 
+                paddingHorizontal: theme.metrics.spacing.comfortable,
+                paddingVertical: theme.metrics.spacing.expansive,
+                alignItems: 'center'
+              }}>
+                <LinearGradient
+                  colors={theme.colors.highlight}
+                  style={{
+                    padding: theme.metrics.spacing.dense,
+                    borderRadius: theme.metrics.borderRadius.pill,
+                    marginBottom: theme.metrics.spacing.dense
+                  }}
+                >
+                  <MaterialCommunityIcons 
+                    name="book-open-outline" 
+                    size={theme.metrics.iconSize.large} 
+                    color={theme.colors.contrastText} 
+                  />
+                </LinearGradient>
+                <Text style={{
+                  color: theme.colors.secondaryText,
+                  fontSize: 16,
+                  textAlign: 'center',
+                  lineHeight: 24,
+                  fontWeight: theme.typography.fontWeights.medium
+                }}>
+                  No recent activities yet.{"\n"}
+                  Start by exploring our quiz collection!
+                </Text>
+              </View>
+            }
           />
         </View>
-      </LinearGradient>
-
-      <View style={{ flex: 1, paddingHorizontal: 24 }}>
-        <View 
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            borderRadius: 8,
-            marginBottom: 16
-          }}
-        >
-          <Text style={{
-
-            fontSize: 20,
-            fontWeight: '700',
-            color: theme.colors.text
-          }}>
-            Your Quizzes
-          </Text>
-        </View>
-        
-        <FlatList
-          data={data?.data}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={refetch}
-              tintColor={theme?.colors.accent}
-            />
-          }
-          renderItem={({ item }) => (
-            <LiveQuizCard data={item} />
-          )}
-          ListEmptyComponent={
-            <LinearGradient
-              colors={theme.colors.card}
-              style={{ 
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 32,
-                gap: 16,
-              }}
-            >
-              <LinearGradient
-                colors={theme.colors.highlight}
-                style={{ 
-                  borderRadius: 20,
-                  padding: 12
-                }}
-              >
-                <MaterialCommunityIcons 
-                  name="magnify" 
-                  size={40} 
-                  color="white" 
-                />
-              </LinearGradient>
-              <Text style={{
-                color: theme?.colors.secondaryText,
-                fontSize: 16,
-              }}>
-                No quizzes available yet
-              </Text>
-            </LinearGradient>
-          }
-        />
       </View>
     </LinearGradient>
   );

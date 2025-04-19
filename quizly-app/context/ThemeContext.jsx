@@ -13,57 +13,88 @@ export const ThemeProvider = ({ children }) => {
     colors: {
       // Background gradients
       background: isDarkMode 
-        ? ['#0f0c29', '#302b63', '#24243e']  // Deep space
-        : ['white', 'white'],            // Soft cyan
+        ? ['#050505', '#1A1A1A', '#0F0F0F']  // Black velvet
+        : ['#FAFAFA', '#F0F0F0', '#FFFFFF'], // Pearl white
       
       // Card gradients
       card: isDarkMode 
-        ? ['#2A2A4A', '#1A1A2E'] 
-        : ['#D4F4EF', '#B9EFE5'],            // Mint freshness
+        ? ['#1C1C1C', '#252525']             // Charcoal layers
+        : ['#FFFFFF', '#F8F8F8'],            // Fresh snow
       
       // Text colors
-      text: isDarkMode ? '#F0F2FC' : '#1A5F7A',
-      secondaryText: isDarkMode ? '#A0A4D9' : '#3A7B85',
+      text: isDarkMode ? '#F0F0F0' : '#1A1A1A',
+      secondaryText: isDarkMode ? '#7A7A7A' : '#5A5A5A',
+      primaryText: isDarkMode ? '#FFFFFF' : '#000000',
       
       // Accent gradients
-      accent: ['#FF6B6B', '#FF8E53'],        // Warm sunset
-      border: isDarkMode ? '#3D3D6B' : '#B9EFE5',
+      accent: ['#909090', '#707070'],        // Mercury flow
+      border: isDarkMode ? '#333333' : '#E5E5E5',
       
       // Highlight gradients
       highlight: isDarkMode 
-        ? ['#43e97b', '#38f9d7']             // Cyber neon
-        : ['#00E3CC', '#00B4A0'],            // Fresh mint
+        ? ['#404040', '#303030']             // Obsidian shine
+        : ['#D0D0D0', '#B0B0B0'],            // Silver lining
       
       // Status gradients
-      success: ['#00C9A7', '#00B894'],       // Tropical teal
-      warning: ['#FF9F45', '#FF7F50'],       // Coral reef
-      info: ['#48C6EF', '#6F86D6'],          // Sky transition
-      danger: ['#FF6B6B', '#FF4757'],        // Vibrant rouge
+      success: ['#808080', '#606060'],       // Graphite
+      warning: ['#A0A0A0', '#808080'],       // Aluminum
+      info: ['#C0C0C0', '#A0A0A0'],          // Platinum
+      danger: ['#505050', '#303030'],        // Onyx
       
       // Text gradients
       textGradient: isDarkMode 
-        ? ['#F0F2FC', '#4facfe'] 
-        : ['#1A5F7A', '#FF8E53'],
+        ? ['#FFFFFF', '#B0B0B0']              // Moonbeam
+        : ['#1A1A1A', '#808080'],            // Graphite fade
       
       // Universal gradients
       gradient: isDarkMode 
-        ? ['#0f0c29', '#302b63'] 
-        : ['#FFDEE9', '#CBF1F5']
+        ? ['#121212', '#2A2A2A']             // Void depth
+        : ['#F5F5F5', '#E0E0E0']             // Mist veil
     },
     effects: {
       shadow: isDarkMode 
-        ? '0 4px 16px rgba(79, 172, 254, 0.2)' 
-        : '0 4px 16px rgba(0, 184, 148, 0.15)',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        ? `0 8px 32px rgba(255, 255, 255, 0.05),
+           0 2px 8px rgba(255, 255, 255, 0.1)` 
+        : `0 8px 32px rgba(0, 0, 0, 0.08),
+           0 2px 4px rgba(0, 0, 0, 0.04)`,
+      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       gradientBorder: isDarkMode 
-        ? ['#3D3D6B', '#4facfe'] 
-        : ['#B9EFE5', '#00E3CC']
+        ? ['#333333', '#4A4A4A']             // Steel edge
+        : ['#E5E5E5', '#D0D0D0'],            // Marble border
+      textureOverlay: isDarkMode 
+        ? 'linear-gradient(rgba(255,255,255,0.02), rgba(0,0,0,0.1))' 
+        : 'linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.3))'
     },
-    metrics: {
-      borderRadius: '14px',
-      padding: '18px',
-      margin: '12px',
-      iconSize: '24px'
+    // In your ThemeContext.js
+metrics: {
+  borderRadius: {
+    soft: 12,    // was '12px'
+    medium: 24,   // was '24px'
+    pill: 40      // was '40px'
+  },
+  spacing: {
+    dense: 16,    // was '16px'
+    comfortable: 24,
+    expansive: 32
+  },
+  iconSize: {
+    small: 20,
+    medium: 24,
+    large: 28
+  }
+},
+    typography: {
+      fontWeights: {
+        light: 300,
+        regular: 400,
+        medium: 500,
+        bold: 600
+      },
+      letterSpacing: {
+        tight: -0.5,
+        normal: 0,
+        wide: 0.5
+      }
     }
   };
 

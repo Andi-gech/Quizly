@@ -84,146 +84,230 @@ export default function Verification() {
   });
 
   return (
-    <TouchableWithoutFeedback onPress={
-      ()=>{
-        Keyboard.dismiss();
-      }
-    } className="flex-1" >
-    <LinearGradient
-      colors={['#0f172a', '#1e293b']}
-      className="flex-1 justify-center items-center"
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <StatusBar style="light" />
+<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+  <LinearGradient
+    colors={theme.colors.background}
+    style={{ flex: 1, justifyContent: 'center' }}
+  >
+    <StatusBar style={theme.isDarkMode ? "light" : "dark"} />
 
-      <View
-        from={{ opacity: 0, translateY: 20 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        className="w-full px-6 items-center"
+    <MotiView
+      from={{ opacity: 0, translateY: 50 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: 'timing', duration: 500 }}
+      style={{ paddingHorizontal: 24 }}
+    >
+      {/* Logo Header */}
+      <MotiView 
+        from={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring' }}
+        style={{ alignItems: 'center', marginBottom: 40 }}
       >
-        {/* Logo Header */}
-        <View className="flex-row items-center mb-12">
+        <LinearGradient
+          colors={theme.colors.accent}
+          style={{
+            padding: 16,
+            borderRadius: theme.metrics.borderRadius.medium,
+            marginBottom: 16
+          }}
+        >
           <MaterialCommunityIcons 
             name="brain" 
-            size={64} 
-            color="#f59e0b" 
-            style={{ marginRight: 10 }}
+            size={52} 
+            color={theme.colors.contrastText} 
           />
-          <Text className="text-amber-400 text-5xl font-bold">QUIZLY</Text>
-        </View>
+        </LinearGradient>
+        <Text style={{
+          color: theme.colors.accent[0],
+          fontSize: 42,
+          fontWeight: '900',
+          letterSpacing: -2,
+          textShadowColor: theme.colors.accent[0] + '50',
+          textShadowOffset: { width: 0, height: 0 },
+          textShadowRadius: 20
+        }}>QUIZLY</Text>
+      </MotiView>
 
-        {/* Status Messages */}
-       
-          {error && (
-            <View
-              from={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full mb-4 bg-amber-900/30 p-3 rounded-lg flex-row items-center"
+      {/* Status Messages */}
+      <AnimatePresence>
+        {error && (
+          <MotiView
+            from={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            style={{ marginBottom: 16 }}
+          >
+            <LinearGradient
+              colors={theme.colors.danger}
+              style={{
+                padding: 16,
+                borderRadius: theme.metrics.borderRadius.soft,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
             >
               <MaterialCommunityIcons 
                 name="alert-circle" 
                 size={20} 
-                color="#f59e0b" 
+                color={theme.colors.contrastText} 
               />
-              <Text className="text-amber-400 ml-2 flex-1">{error}</Text>
-            </View>
-          )}
+              <Text style={{
+                color: theme.colors.contrastText,
+                marginLeft: 8,
+                flex: 1
+              }}>{error}</Text>
+            </LinearGradient>
+          </MotiView>
+        )}
 
-          {success && (
-            <View
-              from={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full mb-4 bg-green-900/30 p-3 rounded-lg flex-row items-center"
+        {success && (
+          <MotiView
+            from={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            style={{ marginBottom: 16 }}
+          >
+            <LinearGradient
+              colors={theme.colors.success}
+              style={{
+                padding: 16,
+                borderRadius: theme.metrics.borderRadius.soft,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
             >
               <MaterialCommunityIcons 
                 name="check-circle" 
                 size={20} 
-                color="#4ade80" 
+                color={theme.colors.contrastText} 
               />
-              <Text className="text-green-400 ml-2 flex-1">{success}</Text>
-            </View>
-          )}
-       
+              <Text style={{
+                color: theme.colors.contrastText,
+                marginLeft: 8,
+                flex: 1
+              }}>{success}</Text>
+            </LinearGradient>
+          </MotiView>
+        )}
+      </AnimatePresence>
 
-        {/* Verification Content */}
-        <View className="w-full items-center">
-          <Ionicons name="mail" size={50} color="#f59e0b" className="mb-4" />
-          <Text className="text-2xl text-white font-bold mb-2">
-            Verify Your Email
-          </Text>
-          <Text className="text-slate-400 text-center mb-8">
-            We've sent a verification code to your email{" "}
-            <Text className="text-amber-400">
-              {params?.email?.slice(0, 4)}****@gmail.com
-            </Text>
-          </Text>
+      {/* Verification Content */}
+      <View style={{ alignItems: 'center' }}>
+        <MotiView
+          from={{ rotate: '-10deg', scale: 0.9 }}
+          animate={{ rotate: '0deg', scale: 1 }}
+          transition={{ type: 'spring' }}
+        >
+          <Ionicons 
+            name="mail" 
+            size={50} 
+            color={theme.colors.accent[0]} 
+            style={{ marginBottom: 24 }}
+          />
+        </MotiView>
 
-          {/* Code Inputs */}
-          <View className="flex-row justify-between w-full mb-8">
-            {code.map((digit, index) => (
+        <Text style={{
+          color: theme.colors.text,
+          fontSize: 24,
+          fontWeight: '700',
+          marginBottom: 8
+        }}>
+          Verify Your Email
+        </Text>
+
+        <Text style={{
+          color: theme.colors.secondaryText,
+          textAlign: 'center',
+          marginBottom: 32
+        }}>
+          We've sent a verification code to{"\n"}
+          <Text style={{ color: theme.colors.accent[0] }}>
+            {params?.email?.slice(0, 4)}****@gmail.com
+          </Text>
+        </Text>
+
+        {/* Code Inputs */}
+        <View style={{ 
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          width: '100%',
+          marginBottom: 32
+        }}>
+          {code.map((digit, index) => (
+            <MotiView
+              key={index}
+              from={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 50 }}
+            >
               <TextInput
-                key={index}
-                className={`w-12 h-12 rounded-xl text-center text-lg 
-                  ${digit ? 'bg-amber-400 text-black' : 'bg-slate-800/50 text-white'} 
-                  font-bold border border-slate-700`}
-                
+                style={[{
+                  width: 52,
+                  height: 52,
+                  borderRadius: theme.metrics.borderRadius.soft,
+                  textAlign: 'center',
+                  fontSize: 20,
+                  fontWeight: '700',
+                  borderWidth: 2,
+                  backgroundColor: digit ? theme.colors.accent[0] : theme.colors.card[0],
+                  borderColor: theme.colors.border,
+                  color: digit ? theme.colors.contrastText : theme.colors.text
+                }, theme.effects.shadow]}
                 maxLength={1}
                 value={digit}
                 onChangeText={(text) => handleChange(text, index)}
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 ref={(ref) => (inputRefs.current[index] = ref)}
               />
-            ))}
-          </View>
+            </MotiView>
+          ))}
+        </View>
 
-          {/* Verify Button */}
-          <RoundedButton
-            label="Verify"
-            onPress={() => mutation.mutate({ code: code.join(""), email: params.email })}
-            bgcolor="bg-amber-400"
-            color="text-black font-bold text-lg"
-            radius="rounded-xl"
-            icon="check-decagram"
-            loading={mutation.isPending}
-            othercolor={
-              ['#f59e0b', '#f59e0b']
-            }
-            
-            className="w-full mb-6"
-          />
+        {/* Verify Button */}
+        <RoundedButton
+          label={mutation.isPending ? "Verifying..." : "Verify"}
+          onPress={() => mutation.mutate({ code: code.join(""), email: params.email })}
+          gradient={theme.colors.accent}
+          textColor={theme.colors.contrastText}
+          icon={mutation.isPending ? "loading" : "check-decagram"}
+          style={{
+            height: 54,
+            width: '100%',
+            ...theme.effects.shadow
+          }}
+        />
 
-          {/* Resend Code */}
+        {/* Resend Code */}
+        <MotiView
+          style={{ flexDirection: 'row', alignItems: 'center', marginTop: 24 }}
+        >
           <TouchableOpacity
             onPress={() => resendCode.mutate({ email: params.email })}
             disabled={resendCooldown > 0}
-            className="flex-row mt-5  p-4 items-center"
+            style={{ flexDirection: 'row', alignItems: 'center' }}
           >
-            <Text className={`text-sm ${
-              resendCooldown > 0 ? 'text-slate-500' : 'text-amber-400'
-            }`}>
-              Resend Verification Code
-              {resendCooldown > 0 && ` (${resendCooldown})`}
+            <Text style={{
+              color: resendCooldown > 0 ? theme.colors.secondaryText : theme.colors.accent[0],
+              fontSize: 14
+            }}>
+              Resend Code{resendCooldown > 0 && ` (${resendCooldown})`}
             </Text>
             {resendCooldown === 0 && (
               <MaterialCommunityIcons 
                 name="arrow-right" 
-                size={16} 
-                color="#f59e0b" 
-                className="ml-2"
+                size={20} 
+                color={theme.colors.accent[0]} 
+                style={{ marginLeft: 8 }}
               />
             )}
           </TouchableOpacity>
-        </View>
+        </MotiView>
       </View>
+    </MotiView>
 
-      {(mutation.isPending || resendCode.isPending) && <LoadingPage />}
-    </LinearGradient>
-    </TouchableWithoutFeedback>
+    {(mutation.isPending || resendCode.isPending) && <LoadingPage />}
+  </LinearGradient>
+</TouchableWithoutFeedback>
   );
 }

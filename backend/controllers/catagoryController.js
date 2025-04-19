@@ -4,6 +4,7 @@ const Catagory = require('../models/Catagory');
 exports.getAllCatagories = async (req, res) => {
     try {
         const catagories = await Catagory.find();
+        console.log(catagories);
         res.status(200).json(catagories);
     } catch (err) {
         res.status(400).json({

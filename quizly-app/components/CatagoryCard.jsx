@@ -2,8 +2,10 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../context/ThemeContext';
 
 export default function CatagoryCard({ icon, name, onpress }) {
+  const theme=useTheme(); 
   return (
     <View
     
@@ -15,7 +17,7 @@ export default function CatagoryCard({ icon, name, onpress }) {
         activeOpacity={0.9}
       >
         <LinearGradient
-          colors={['#1e293b', '#0f172a']}
+          colors={theme.colors.background}
           className="w-28 h-28 items-center justify-center rounded-2xl border border-slate-700/50"
           style={{ padding: 2 ,height:100,width:120,margin:10,
             borderRadius: 10,
@@ -31,8 +33,10 @@ export default function CatagoryCard({ icon, name, onpress }) {
             <Text 
               numberOfLines={1}
               ellipsizeMode="tail"
-              className="text-white  text-xs font-bold text-center"
+              
+              className={`  text-xs font-bold text-center`}
               style={{ 
+                color: theme.colors.text,
                 textShadowColor: 'rgba(0,0,0,0.3)',
                 textShadowOffset: { width: 0, height: 1 },
                 textShadowRadius: 2,
