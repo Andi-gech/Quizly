@@ -21,11 +21,12 @@ export default function Starter() {
   const router = useRouter();
   
   const { data, isLoading } = UseFetchQuiz({ id });
+
   const handleclose = () => {
   mutation.mutate();
   
   }
-  console.log(JSON.stringify(data));
+  
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
 useEffect(() => {
@@ -73,6 +74,7 @@ useEffect(() => {
   
   const handleClick = () => {
   if (data?.data?.questions?.length > 0) {
+    console.log("start")
   setStarted(true);
   }
   };
@@ -132,6 +134,7 @@ useEffect(() => {
       </LinearGradient>
     );
   }
+  console.log(data?.data?.questions.length,"S")
 
   return (
     <LinearGradient

@@ -5,39 +5,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import React,{useEffect,useState} from "react";
 import { useTheme } from "../../context/ThemeContext";
-import { registerForPushNotificationsAsync } from "../../components/registerForPushNotificationsAsync";
+
 import api from "@/utils/Api";
 import { useMutation } from "@tanstack/react-query";
 export default function TabLayout() {
     const theme = useTheme();
-    const [isRegistered, setIsRegistered] = useState(false);
+  
     
-    const mutation = useMutation({
-      mutationFn: async (token) => {
-        const response = await api.put("/user/pushnotification", {
-          pushToken: token,
-        });
-        return response.data;
-      },
-      onSuccess: (data) => {},
-      onError: (error) => {},
-    });
-    useEffect(() => {
-      initializeSocket();
-    }, []);
-    useEffect(() => {
-      const registerPushNotifications = async () => {
-        if (!isRegistered) {
-          const token = await registerForPushNotificationsAsync(mutation.mutate);
-  
-          if (token) {
-            setIsRegistered(true);
-          }
-        }
-      };
-      registerPushNotifications();
-    }, [isRegistered, mutation]);
-  
+    
     
   return (
     <Tabs
